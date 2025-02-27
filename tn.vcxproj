@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8A09BD2C-23E9-3E38-9D55-4A34ED9E0187}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>tn</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tn.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">tn</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tn.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">tn</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tn.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">tn</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tn.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">tn</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/llvm/llvm/include" /external:I "C:/llvm/llvm-build/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\llvm\llvm-build\Debug\lib\LLVMCore.lib;C:\llvm\llvm-build\Debug\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\Debug\lib\LLVMObject.lib;C:\llvm\llvm-build\Debug\lib\LLVMOrcJIT.lib;C:\llvm\llvm-build\Debug\lib\LLVMSupport.lib;C:\llvm\llvm-build\Debug\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\Debug\lib\LLVMX86CodeGen.lib;C:\llvm\llvm-build\Debug\lib\LLVMX86AsmParser.lib;C:\llvm\llvm-build\Debug\lib\LLVMX86Desc.lib;C:\llvm\llvm-build\Debug\lib\LLVMX86Disassembler.lib;C:\llvm\llvm-build\Debug\lib\LLVMX86Info.lib;C:\llvm\llvm-build\Debug\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\Debug\lib\LLVMRuntimeDyld.lib;C:\llvm\llvm-build\Debug\lib\LLVMPasses.lib;C:\llvm\llvm-build\Debug\lib\LLVMCoroutines.lib;C:\llvm\llvm-build\Debug\lib\LLVMHipStdPar.lib;C:\llvm\llvm-build\Debug\lib\LLVMipo.lib;C:\llvm\llvm-build\Debug\lib\LLVMFrontendOpenMP.lib;C:\llvm\llvm-build\Debug\lib\LLVMFrontendOffloading.lib;C:\llvm\llvm-build\Debug\lib\LLVMLinker.lib;C:\llvm\llvm-build\Debug\lib\LLVMVectorize.lib;C:\llvm\llvm-build\Debug\lib\LLVMJITLink.lib;C:\llvm\llvm-build\Debug\lib\LLVMOrcTargetProcess.lib;C:\llvm\llvm-build\Debug\lib\LLVMOrcShared.lib;C:\llvm\llvm-build\Debug\lib\LLVMWindowsDriver.lib;C:\llvm\llvm-build\Debug\lib\LLVMOption.lib;C:\llvm\llvm-build\Debug\lib\LLVMAsmPrinter.lib;C:\llvm\llvm-build\Debug\lib\LLVMCFGuard.lib;C:\llvm\llvm-build\Debug\lib\LLVMGlobalISel.lib;C:\llvm\llvm-build\Debug\lib\LLVMIRPrinter.lib;C:\llvm\llvm-build\Debug\lib\LLVMInstrumentation.lib;C:\llvm\llvm-build\Debug\lib\LLVMSelectionDAG.lib;C:\llvm\llvm-build\Debug\lib\LLVMCodeGen.lib;C:\llvm\llvm-build\Debug\lib\LLVMTarget.lib;C:\llvm\llvm-build\Debug\lib\LLVMBitWriter.lib;C:\llvm\llvm-build\Debug\lib\LLVMScalarOpts.lib;C:\llvm\llvm-build\Debug\lib\LLVMAggressiveInstCombine.lib;C:\llvm\llvm-build\Debug\lib\LLVMInstCombine.lib;C:\llvm\llvm-build\Debug\lib\LLVMObjCARCOpts.lib;C:\llvm\llvm-build\Debug\lib\LLVMTransformUtils.lib;C:\llvm\llvm-build\Debug\lib\LLVMAnalysis.lib;C:\llvm\llvm-build\Debug\lib\LLVMProfileData.lib;C:\llvm\llvm-build\Debug\lib\LLVMSymbolize.lib;C:\llvm\llvm-build\Debug\lib\LLVMDebugInfoDWARF.lib;C:\llvm\llvm-build\Debug\lib\LLVMDebugInfoPDB.lib;C:\llvm\llvm-build\Debug\lib\LLVMObject.lib;C:\llvm\llvm-build\Debug\lib\LLVMIRReader.lib;C:\llvm\llvm-build\Debug\lib\LLVMBitReader.lib;C:\llvm\llvm-build\Debug\lib\LLVMAsmParser.lib;C:\llvm\llvm-build\Debug\lib\LLVMCore.lib;C:\llvm\llvm-build\Debug\lib\LLVMRemarks.lib;C:\llvm\llvm-build\Debug\lib\LLVMBitstreamReader.lib;C:\llvm\llvm-build\Debug\lib\LLVMTextAPI.lib;C:\llvm\llvm-build\Debug\lib\LLVMDebugInfoMSF.lib;C:\llvm\llvm-build\Debug\lib\LLVMDebugInfoBTF.lib;C:\llvm\llvm-build\Debug\lib\LLVMCodeGenTypes.lib;C:\llvm\llvm-build\Debug\lib\LLVMMCParser.lib;C:\llvm\llvm-build\Debug\lib\LLVMMCDisassembler.lib;C:\llvm\llvm-build\Debug\lib\LLVMMC.lib;C:\llvm\llvm-build\Debug\lib\LLVMBinaryFormat.lib;C:\llvm\llvm-build\Debug\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\Debug\lib\LLVMDebugInfoCodeView.lib;C:\llvm\llvm-build\Debug\lib\LLVMSupport.lib;C:\llvm\llvm-build\Debug\lib\LLVMDemangle.lib;psapi.lib;shell32.lib;ole32.lib;uuid.lib;advapi32.lib;ws2_32.lib;delayimp.lib;-delayload:shell32.dll;-delayload:ole32.dll;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/hp i5/Documents/HCS/Capstone Project/Debug/tn.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/hp i5/Documents/HCS/Capstone Project/Debug/tn.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/llvm/llvm/include" /external:I "C:/llvm/llvm-build/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\llvm\llvm-build\Release\lib\LLVMCore.lib;C:\llvm\llvm-build\Release\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\Release\lib\LLVMObject.lib;C:\llvm\llvm-build\Release\lib\LLVMOrcJIT.lib;C:\llvm\llvm-build\Release\lib\LLVMSupport.lib;C:\llvm\llvm-build\Release\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\Release\lib\LLVMX86CodeGen.lib;C:\llvm\llvm-build\Release\lib\LLVMX86AsmParser.lib;C:\llvm\llvm-build\Release\lib\LLVMX86Desc.lib;C:\llvm\llvm-build\Release\lib\LLVMX86Disassembler.lib;C:\llvm\llvm-build\Release\lib\LLVMX86Info.lib;C:\llvm\llvm-build\Release\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\Release\lib\LLVMRuntimeDyld.lib;C:\llvm\llvm-build\Release\lib\LLVMPasses.lib;C:\llvm\llvm-build\Release\lib\LLVMCoroutines.lib;C:\llvm\llvm-build\Release\lib\LLVMHipStdPar.lib;C:\llvm\llvm-build\Release\lib\LLVMipo.lib;C:\llvm\llvm-build\Release\lib\LLVMFrontendOpenMP.lib;C:\llvm\llvm-build\Release\lib\LLVMFrontendOffloading.lib;C:\llvm\llvm-build\Release\lib\LLVMLinker.lib;C:\llvm\llvm-build\Release\lib\LLVMVectorize.lib;C:\llvm\llvm-build\Release\lib\LLVMJITLink.lib;C:\llvm\llvm-build\Release\lib\LLVMOrcTargetProcess.lib;C:\llvm\llvm-build\Release\lib\LLVMOrcShared.lib;C:\llvm\llvm-build\Release\lib\LLVMWindowsDriver.lib;C:\llvm\llvm-build\Release\lib\LLVMOption.lib;C:\llvm\llvm-build\Release\lib\LLVMAsmPrinter.lib;C:\llvm\llvm-build\Release\lib\LLVMCFGuard.lib;C:\llvm\llvm-build\Release\lib\LLVMGlobalISel.lib;C:\llvm\llvm-build\Release\lib\LLVMIRPrinter.lib;C:\llvm\llvm-build\Release\lib\LLVMInstrumentation.lib;C:\llvm\llvm-build\Release\lib\LLVMSelectionDAG.lib;C:\llvm\llvm-build\Release\lib\LLVMCodeGen.lib;C:\llvm\llvm-build\Release\lib\LLVMTarget.lib;C:\llvm\llvm-build\Release\lib\LLVMBitWriter.lib;C:\llvm\llvm-build\Release\lib\LLVMScalarOpts.lib;C:\llvm\llvm-build\Release\lib\LLVMAggressiveInstCombine.lib;C:\llvm\llvm-build\Release\lib\LLVMInstCombine.lib;C:\llvm\llvm-build\Release\lib\LLVMObjCARCOpts.lib;C:\llvm\llvm-build\Release\lib\LLVMTransformUtils.lib;C:\llvm\llvm-build\Release\lib\LLVMAnalysis.lib;C:\llvm\llvm-build\Release\lib\LLVMProfileData.lib;C:\llvm\llvm-build\Release\lib\LLVMSymbolize.lib;C:\llvm\llvm-build\Release\lib\LLVMDebugInfoDWARF.lib;C:\llvm\llvm-build\Release\lib\LLVMDebugInfoPDB.lib;C:\llvm\llvm-build\Release\lib\LLVMObject.lib;C:\llvm\llvm-build\Release\lib\LLVMIRReader.lib;C:\llvm\llvm-build\Release\lib\LLVMBitReader.lib;C:\llvm\llvm-build\Release\lib\LLVMAsmParser.lib;C:\llvm\llvm-build\Release\lib\LLVMCore.lib;C:\llvm\llvm-build\Release\lib\LLVMRemarks.lib;C:\llvm\llvm-build\Release\lib\LLVMBitstreamReader.lib;C:\llvm\llvm-build\Release\lib\LLVMTextAPI.lib;C:\llvm\llvm-build\Release\lib\LLVMDebugInfoMSF.lib;C:\llvm\llvm-build\Release\lib\LLVMDebugInfoBTF.lib;C:\llvm\llvm-build\Release\lib\LLVMCodeGenTypes.lib;C:\llvm\llvm-build\Release\lib\LLVMMCParser.lib;C:\llvm\llvm-build\Release\lib\LLVMMCDisassembler.lib;C:\llvm\llvm-build\Release\lib\LLVMMC.lib;C:\llvm\llvm-build\Release\lib\LLVMBinaryFormat.lib;C:\llvm\llvm-build\Release\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\Release\lib\LLVMDebugInfoCodeView.lib;C:\llvm\llvm-build\Release\lib\LLVMSupport.lib;C:\llvm\llvm-build\Release\lib\LLVMDemangle.lib;psapi.lib;shell32.lib;ole32.lib;uuid.lib;advapi32.lib;ws2_32.lib;delayimp.lib;-delayload:shell32.dll;-delayload:ole32.dll;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/hp i5/Documents/HCS/Capstone Project/Release/tn.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/hp i5/Documents/HCS/Capstone Project/Release/tn.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/llvm/llvm/include" /external:I "C:/llvm/llvm-build/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MinSpace</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\llvm\llvm-build\MinSizeRel\lib\LLVMCore.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMObject.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMOrcJIT.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMSupport.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMX86CodeGen.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMX86AsmParser.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMX86Desc.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMX86Disassembler.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMX86Info.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMRuntimeDyld.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMPasses.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMCoroutines.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMHipStdPar.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMipo.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMFrontendOpenMP.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMFrontendOffloading.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMLinker.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMVectorize.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMJITLink.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMOrcTargetProcess.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMOrcShared.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMWindowsDriver.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMOption.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMAsmPrinter.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMCFGuard.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMGlobalISel.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMIRPrinter.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMInstrumentation.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMSelectionDAG.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMCodeGen.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMTarget.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMBitWriter.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMScalarOpts.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMAggressiveInstCombine.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMInstCombine.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMObjCARCOpts.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMTransformUtils.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMAnalysis.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMProfileData.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMSymbolize.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDebugInfoDWARF.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDebugInfoPDB.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMObject.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMIRReader.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMBitReader.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMAsmParser.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMCore.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMRemarks.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMBitstreamReader.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMTextAPI.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDebugInfoMSF.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDebugInfoBTF.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMCodeGenTypes.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMMCParser.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMMCDisassembler.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMMC.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMBinaryFormat.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDebugInfoCodeView.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMSupport.lib;C:\llvm\llvm-build\MinSizeRel\lib\LLVMDemangle.lib;psapi.lib;shell32.lib;ole32.lib;uuid.lib;advapi32.lib;ws2_32.lib;delayimp.lib;-delayload:shell32.dll;-delayload:ole32.dll;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/hp i5/Documents/HCS/Capstone Project/MinSizeRel/tn.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/hp i5/Documents/HCS/Capstone Project/MinSizeRel/tn.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/llvm/llvm/include" /external:I "C:/llvm/llvm-build/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_NONSTDC_NO_WARNINGS;_SCL_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;UNICODE;_UNICODE;__STDC_CONSTANT_MACROS;__STDC_FORMAT_MACROS;__STDC_LIMIT_MACROS;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\hp i5\Documents\HCS\Capstone Project\include;C:\llvm\llvm\include;C:\llvm\llvm-build\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCore.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMObject.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMOrcJIT.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMSupport.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMX86CodeGen.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMX86AsmParser.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMX86Desc.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMX86Disassembler.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMX86Info.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMExecutionEngine.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMRuntimeDyld.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMPasses.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCoroutines.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMHipStdPar.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMipo.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMFrontendOpenMP.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMFrontendOffloading.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMLinker.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMVectorize.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMJITLink.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMOrcTargetProcess.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMOrcShared.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMWindowsDriver.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMOption.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMAsmPrinter.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCFGuard.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMGlobalISel.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMIRPrinter.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMInstrumentation.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMSelectionDAG.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCodeGen.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMTarget.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMBitWriter.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMScalarOpts.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMAggressiveInstCombine.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMInstCombine.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMObjCARCOpts.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMTransformUtils.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMAnalysis.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMProfileData.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMSymbolize.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDebugInfoDWARF.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDebugInfoPDB.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMObject.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMIRReader.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMBitReader.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMAsmParser.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCore.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMRemarks.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMBitstreamReader.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMTextAPI.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDebugInfoMSF.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDebugInfoBTF.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMCodeGenTypes.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMMCParser.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMMCDisassembler.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMMC.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMBinaryFormat.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMTargetParser.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDebugInfoCodeView.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMSupport.lib;C:\llvm\llvm-build\RelWithDebInfo\lib\LLVMDemangle.lib;psapi.lib;shell32.lib;ole32.lib;uuid.lib;advapi32.lib;ws2_32.lib;delayimp.lib;-delayload:shell32.dll;-delayload:ole32.dll;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/hp i5/Documents/HCS/Capstone Project/RelWithDebInfo/tn.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/hp i5/Documents/HCS/Capstone Project/RelWithDebInfo/tn.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/hp i5/Documents/HCS/Capstone Project" "-BC:/Users/hp i5/Documents/HCS/Capstone Project" --check-stamp-file "C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeCXXCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeRCCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeSystem.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMBuildTreeOnlyTargets.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfig.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfigVersion.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMExports.cmake;C:\llvm\llvm\cmake\modules\LLVM-Config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/hp i5/Documents/HCS/Capstone Project" "-BC:/Users/hp i5/Documents/HCS/Capstone Project" --check-stamp-file "C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeCXXCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeRCCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeSystem.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMBuildTreeOnlyTargets.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfig.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfigVersion.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMExports.cmake;C:\llvm\llvm\cmake\modules\LLVM-Config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/hp i5/Documents/HCS/Capstone Project" "-BC:/Users/hp i5/Documents/HCS/Capstone Project" --check-stamp-file "C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeCXXCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeRCCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeSystem.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMBuildTreeOnlyTargets.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfig.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfigVersion.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMExports.cmake;C:\llvm\llvm\cmake\modules\LLVM-Config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/hp i5/Documents/HCS/Capstone Project" "-BC:/Users/hp i5/Documents/HCS/Capstone Project" --check-stamp-file "C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Internal\CMakeRCLinkerInformation.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeCXXCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeRCCompiler.cmake;C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\3.31.0-rc1\CMakeSystem.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMBuildTreeOnlyTargets.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfig.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMConfigVersion.cmake;C:\llvm\llvm-build\lib\cmake\llvm\LLVMExports.cmake;C:\llvm\llvm\cmake\modules\LLVM-Config.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Users\hp i5\Documents\HCS\Capstone Project\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\hp i5\Documents\HCS\Capstone Project\main.cpp" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\hp i5\Documents\HCS\Capstone Project\ZERO_CHECK.vcxproj">
+      <Project>{16E7D241-C7C9-3B5B-9440-706CDEF74613}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

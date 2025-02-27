@@ -1,0 +1,7 @@
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/intrinsics_gen.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/omp_gen.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/acc_gen.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/RISCVTargetParserTableGen.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/tino.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/ALL_BUILD.dir
+C:/Users/hp i5/Documents/HCS/Capstone Project/CMakeFiles/ZERO_CHECK.dir

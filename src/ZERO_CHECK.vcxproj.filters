@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\hp i5\Documents\HCS\Capstone Project\src\CMakeFiles\221e9a9e54fd6df9e41f2f8793b2fe51\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BB5CD551-BD76-3558-ABD5-97E3568FD0D8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+^C:\USERS\HP I5\DOCUMENTS\HCS\CAPSTONE PROJECT\SRC\CMAKEFILES\221E9A9E54FD6DF9E41F2F8793B2FE51\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/hp i5/Documents/HCS/Capstone Project/src" "-BC:/Users/hp i5/Documents/HCS/Capstone Project/src" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/hp i5/Documents/HCS/Capstone Project/src/tino.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
