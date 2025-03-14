@@ -1,1 +1,6 @@
-nyora("Hello world")
+
+basa test() {
+    nyora("Hello world")
+}
+
+test()

@@ -70,7 +70,7 @@ Value *VariableExprAST::codegen()
   // Look this variable up in the function.
   AllocaInst *A = NamedValues[Name];
   if (!A)
-    return LogErrorV("Unknown variable name");
+    return LogErrorV("Paita 'zita' risiri kuzivikanwa");
 
   // Load the value.
   return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
@@ -117,7 +117,7 @@ Value *BinaryExprAST::codegen()
     // Look up the name.
     Value *Variable = NamedValues[LHSE->getName()];
     if (!Variable)
-      return LogErrorV("Unknown variable name");
+      return LogErrorV("Paita 'zita' risiri kuzivikanwa");
 
     Builder->CreateStore(Val, Variable);
     return Val;
@@ -191,13 +191,13 @@ Value *CallExprAST::codegen()
   // Look up the function in the module.
   Function *CalleeF = getFunction(Callee);
   if (!CalleeF)
-    return LogErrorV("Unknown function referenced");
+    return LogErrorV("'basa' iri harina kuwanikwa");
 
   if (Callee == "nyora")
   {
     // Ensure `nyora` gets exactly one argument.
     if (Args.size() != 1)
-      return LogErrorV("nyora expects exactly one argument");
+      return LogErrorV("nyora inotasira kupiwa izwi rekunyora");
 
     // Generate code for the argument.
     Value *Arg = Args[0]->codegen();
@@ -228,7 +228,7 @@ Value *CallExprAST::codegen()
     }
     else
     {
-      return LogErrorV("Unsupported type for nyora");
+      return LogErrorV("mando iyi haikwanise kunyorwa ");
     }
   }
 
@@ -637,9 +637,9 @@ void HandleDefinition()
   {
     if (auto *FnIR = FnAST->codegen())
     {
-      fprintf(stderr, "Read function definition:");
-      FnIR->print(errs());
-      fprintf(stderr, "\n");
+      //fprintf(stderr, "Read function definition:");
+      //FnIR->print(errs());
+      //fprintf(stderr, "\n");
       ExitOnErr(TheJIT->addModule(
           ThreadSafeModule(std::move(TheModule), std::move(TheContext))));
       InitializeModuleAndManagers();

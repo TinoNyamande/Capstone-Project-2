@@ -40,39 +40,39 @@ int gettok()
       IdentifierStr += LastChar;
 
     // Check for keywords.
-    if (IdentifierStr == "def")
+    if (IdentifierStr == "basa")
       return tok_def;
     if (IdentifierStr == "extern")
       return tok_extern;
-    if (IdentifierStr == "if")
+    if (IdentifierStr == "kana")
       return tok_if;
     if (IdentifierStr == "then")
       return tok_then;
-    if (IdentifierStr == "else")
+    if (IdentifierStr == "kana_kuti")
       return tok_else;
-    if (IdentifierStr == "for")
+    if (IdentifierStr == "pakati")
       return tok_for;
-    if (IdentifierStr == "in")
+    if (IdentifierStr == "mu")
       return tok_in;
     if (IdentifierStr == "binary")
       return tok_binary;
     if (IdentifierStr == "unary")
       return tok_unary;
-    if (IdentifierStr == "var")
+    if (IdentifierStr == "zita")
       return tok_var;
-    if (IdentifierStr == "return")
+    if (IdentifierStr == "dzosa")
       return tok_return;
-    if (IdentifierStr == "open")
+    if (IdentifierStr == "vhura")
       return tok_open;
-    if (IdentifierStr == "write")
-      return tok_write;
-    if (IdentifierStr == "read")
+    // if (IdentifierStr == "nyora")
+    //   return tok_write;
+    if (IdentifierStr == "verenga")
       return tok_read;
-    if (IdentifierStr == "delete")
+    if (IdentifierStr == "bvisa")
       return tok_delete;
-    if (IdentifierStr == "while")
+    if (IdentifierStr == "kusvika")
     return tok_while;
-if (IdentifierStr == "do")
+if (IdentifierStr == "ita")
     return tok_do;
 
 
