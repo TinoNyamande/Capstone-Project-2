@@ -1,0 +1,39 @@
+# dependencies
+/project_documentation/node_modules
+/project_documentation/.pnp
+/project_documentation.pnp.*
+/project_documentation.yarn/*
+!/project_documentation.yarn/patches
+!/project_documentation.yarn/plugins
+!/project_documentation.yarn/releases
+!/project_documentation.yarn/versions
+
+# testing
+/project_documentation/coverage
+
+# next.js
+/project_documentation/.next/
+/project_documentation/out/
+
+# production
+/project_documentation/build
+
+# misc
+/project_documentation.DS_Store
+/project_documentation*.pem
+
+# debug
+/project_documentationnpm-debug.log*
+/project_documentationyarn-debug.log*
+/project_documentationyarn-error.log*
+/project_documentation.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+/project_documentation.env*
+
+# vercel
+/project_documentation.vercel
+
+# typescript
+/project_documentation*.tsbuildinfo
+/project_documentationnext-env.d.ts
