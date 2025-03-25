@@ -587,6 +587,72 @@ Function *FunctionAST::codegen()
   return TheFunction;
 }
 
+Value *ClassAST::codegen() {
+  fprintf(stderr, "Generating LLVM IR for class: %s\n", Name.c_str());
+
+  std::vector<Type *> FieldTypes;
+  for (const auto &Field : Fields) {
+      FieldTypes.push_back(Type::getDoubleTy(*TheContext));  // Assume all fields are `double` for now.
+  }
+
+  StructType *ClassStruct = StructType::create(*TheContext, FieldTypes, Name);
+  TheModule->getOrInsertGlobal(Name, ClassStruct);
+
+  fprintf(stderr, "Class %s generated with %lu fields.\n", Name.c_str(), Fields.size());
+  return nullptr;
+}
+
+Value *NewExprAST::codegen() {
+  fprintf(stderr, "Generating LLVM IR for object instantiation: %s\n", ClassName.c_str());
+
+  //StructType *ClassStruct = TheModule->getTypeByName(ClassName);
+  StructType *ClassStruct = StructType::getTypeByName(*TheContext, ClassName);
+
+  if (!ClassStruct)
+      return LogErrorV("Unknown class name in object instantiation");
+
+  Function *TheFunction = Builder->GetInsertBlock()->getParent();
+  IRBuilder<> TmpB(&*TheFunction->getEntryBlock().begin());
+      
+      
+  Value *Alloc = TmpB.CreateAlloca(ClassStruct, nullptr, ClassName.c_str());
+
+  fprintf(stderr, "Object of class %s allocated.\n", ClassName.c_str());
+  return Alloc;
+}
+Value *MemberExprAST::codegen() {
+  fprintf(stderr, "Generating LLVM IR for member access: %s.%s\n", ClassName.c_str(), Member.c_str());
+
+  Value *Obj = Object->codegen();
+  if (!Obj)
+      return LogErrorV("Invalid object in member access");
+
+  // Use the updated method to retrieve the class type
+  StructType *ClassStruct = StructType::getTypeByName(*TheContext, ClassName);
+  if (!ClassStruct)
+      return LogErrorV("Unknown class type in member access");
+
+  // Find the field index
+  auto ClassIt = ClassTable.find(ClassName);
+  if (ClassIt == ClassTable.end())
+      return LogErrorV("Class not found");
+
+
+  const auto &Fields = ClassIt->second.getFields();
+  //const auto &Fields = ClassIt->second.Fields;
+  auto It = std::find(Fields.begin(), Fields.end(), Member);
+  if (It == Fields.end())
+      return LogErrorV("Unknown field or method");
+
+  int Index = std::distance(Fields.begin(), It);
+  Value *FieldPtr = Builder->CreateStructGEP(ClassStruct, Obj, Index, Member);
+  
+  //return Builder->CreateLoad(FieldPtr, Member.c_str());
+  Type *FieldType = ClassStruct->getElementType(Index);
+  return Builder->CreateLoad(FieldType, FieldPtr, Member.c_str());
+}
+
+
 //===----------------------------------------------------------------------===//
 // Top-Level parsing and JIT Driver
 //===----------------------------------------------------------------------===//
@@ -670,6 +736,8 @@ void HandleExtern()
     getNextToken();
   }
 }
+
+
 
 void HandleTopLevelExpression()
 {

@@ -39,6 +39,12 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
   LogError(Str);
   return nullptr;
 }
+/// Log an error message for class parsing and return nullptr.
+std::unique_ptr<ClassAST> LogErrorClass(const char *Str) {
+  fprintf(stderr, "Class Parsing Error: %s\n", Str);
+  return nullptr;
+}
+
 
 std::unique_ptr<ExprAST> ParseExpression();
 
@@ -668,3 +674,98 @@ std::unique_ptr<PrototypeAST> ParseExtern()
   getNextToken(); // eat extern.
   return ParsePrototype();
 }
+
+std::unique_ptr<ClassAST> ParseClass() {
+  getNextToken(); // Consume 'class'
+
+  // Expect class name
+  if (CurTok != tok_identifier)
+      return LogErrorClass("Expected class name after 'class'");
+  std::string ClassName = IdentifierStr;
+  getNextToken(); // Consume class name
+
+  // Check for inheritance
+  std::string ParentClass = "";
+  if (CurTok == tok_extends) {
+      getNextToken(); // Consume 'extends'
+      if (CurTok != tok_identifier)
+          return LogErrorClass("Expected parent class name after 'extends'");
+      ParentClass = IdentifierStr;
+      getNextToken(); // Consume parent class name
+  }
+
+  // Expect opening brace '{'
+  if (CurTok != '{')
+      return LogErrorClass("Expected '{' after class declaration");
+  getNextToken(); // Consume '{'
+
+  std::vector<std::string> Fields;
+  std::vector<std::unique_ptr<PrototypeAST>> Methods;
+
+  // Parse class body
+  while (CurTok != '}') {
+      if (CurTok == tok_public || CurTok == tok_private) {
+          getNextToken(); // Consume 'public' or 'private'
+      }
+
+      if (CurTok == tok_identifier) {
+          // Field declaration (e.g., `age;`)
+          Fields.push_back(IdentifierStr);
+          getNextToken();
+          if (CurTok != ';')
+              return LogErrorClass("Expected ';' after field declaration");
+          getNextToken(); // Consume ';'
+      } else if (CurTok == tok_def) {
+          // Method declaration
+          auto Method = ParsePrototype();
+          if (!Method) return nullptr;
+          Methods.push_back(std::move(Method));
+      } else {
+          return LogErrorClass("Unexpected token in class body");
+      }
+  }
+
+  getNextToken(); // Consume '}'
+  ClassTable[ClassName] = ClassAST(ClassName, ParentClass, Fields, std::move(Methods));
+  return std::make_unique<ClassAST>(ClassName, ParentClass, Fields, std::move(Methods));
+}
+
+std::unique_ptr<ExprAST> ParseNewExpr() {
+  getNextToken(); // Consume 'new'
+
+  if (CurTok != tok_identifier)
+      return LogError("Expected class name after 'new'");
+
+  std::string ClassName = IdentifierStr;
+  getNextToken(); // Consume class name
+
+  if (CurTok != '(')
+      return LogError("Expected '(' after class name");
+  getNextToken(); // Consume '('
+
+  if (CurTok != ')')
+      return LogError("Expected ')' after '(' in object instantiation");
+  getNextToken(); // Consume ')'
+
+  return std::make_unique<NewExprAST>(ClassName);
+}
+
+static std::unique_ptr<ExprAST> ParseMemberAccess(std::unique_ptr<ExprAST> Object) {
+  getNextToken(); // Consume '.'
+
+  if (CurTok != tok_identifier)
+      return LogError("Expected member name after '.'");
+
+  std::string MemberName = IdentifierStr;
+  getNextToken(); // Consume member name
+
+  // Retrieve the class name from the object (Assuming object is an identifier)
+  std::string ClassName = "Unknown";  // Default if we can't resolve
+  if (auto *Var = dynamic_cast<VariableExprAST *>(Object.get())) {
+      ClassName = Var->getName();  // Assuming variables store class instances
+  }
+
+  return std::make_unique<MemberExprAST>(std::move(Object), MemberName, ClassName);
+}
+
+

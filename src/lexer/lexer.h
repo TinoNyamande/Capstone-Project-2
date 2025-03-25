@@ -81,7 +81,18 @@ enum Token
   tok_close = -20,
   tok_delete = -21,
   tok_while = -22,
-  tok_do = -23
+  tok_do = -23,
+
+  //classes
+  tok_class = -6,
+  tok_new = -7,
+  tok_this = -8,
+  tok_extends = -9,
+  tok_public = -10,
+  tok_private = -11,
+  tok_dot = '.',  // Object member access (e.g., obj.method)
+  tok_arrow = -12 // Pointer-like access (optional)
+
 
 
 };

@@ -20,6 +20,7 @@ class ExprAST;
 std::unique_ptr<ExprAST> LogError(const char *Str);
 std::unique_ptr<PrototypeAST> LogErrorP(const char *Str);
 std::unique_ptr<FunctionAST> LogErrorF(const char *Str);
+std::unique_ptr<ClassAST> LogErrorClass(const char *Str);
 
 // Parser functions.
 std::unique_ptr<ExprAST> ParseExpression();
@@ -40,5 +41,8 @@ std::unique_ptr<PrototypeAST> ParsePrototype();
 std::unique_ptr<FunctionAST> ParseDefinition();
 std::unique_ptr<PrototypeAST> ParseExtern();
 std::unique_ptr<FunctionAST> ParseTopLevelExpr();
+std::unique_ptr<ExprAST> ParseMemberAccess(std::unique_ptr<ExprAST> Object);
+std::unique_ptr<ExprAST> ParseNewExpr() ;
+std::unique_ptr<ClassAST> ParseClass();
 
 #endif // PARSER_H

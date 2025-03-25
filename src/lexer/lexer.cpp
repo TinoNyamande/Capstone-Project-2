@@ -4,8 +4,8 @@
 #include <cctype>
 
 std::string IdentifierStr; // Filled in if tok_identifier
-double NumVal;  
-std::ifstream InputFile;           // Filled in if tok_number
+double NumVal;
+std::ifstream InputFile; // Filled in if tok_number
 
 int gettok()
 {
@@ -71,10 +71,21 @@ int gettok()
     if (IdentifierStr == "bvisa")
       return tok_delete;
     if (IdentifierStr == "kusvika")
-    return tok_while;
-if (IdentifierStr == "ita")
-    return tok_do;
-
+      return tok_while;
+    if (IdentifierStr == "ita")
+      return tok_do;
+    if (IdentifierStr == "class") 
+      return tok_class;
+    if (IdentifierStr == "new") 
+      return tok_new;
+    if (IdentifierStr == "this") 
+      return tok_this;
+    if (IdentifierStr == "extends") 
+      return tok_extends;
+    if (IdentifierStr == "public") 
+      return tok_public;
+    if (IdentifierStr == "private") 
+      return tok_private;
 
     return tok_identifier;
   }
