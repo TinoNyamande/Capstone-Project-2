@@ -1,0 +1,5 @@
+zita x = 20 mu kana(x>5) {
+   nyora("X mudiki");
+} kanaKuti{
+    nyora("X muhombe")
+}

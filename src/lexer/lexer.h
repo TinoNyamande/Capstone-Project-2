@@ -51,6 +51,7 @@ enum Token
 {
   tok_eof = -1,
 
+
   // commands
   tok_def = -2,
   tok_extern = -3,
@@ -91,7 +92,8 @@ enum Token
   tok_public = -10,
   tok_private = -11,
   tok_dot = '.',  // Object member access (e.g., obj.method)
-  tok_arrow = -12 // Pointer-like access (optional)
+  tok_arrow = -12, // Pointer-like access (optional)
+  tok_semicolon = -50
 
 
 
@@ -99,7 +101,8 @@ enum Token
 
 extern std::ifstream InputFile;
 extern std::string IdentifierStr; 
-extern double NumVal;             
+extern double NumVal;   
+extern std::map<std::string, GlobalVariable *> GlobalNamedValues;
 int gettok();
 
 #endif

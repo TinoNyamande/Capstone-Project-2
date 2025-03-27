@@ -6,6 +6,7 @@
 std::string IdentifierStr; // Filled in if tok_identifier
 double NumVal;
 std::ifstream InputFile; // Filled in if tok_number
+std::map<std::string, llvm::GlobalVariable *> GlobalNamedValues;
 
 int gettok()
 {
@@ -41,6 +42,7 @@ int gettok()
 
     // Check for keywords.
     if (IdentifierStr == "basa")
+      
       return tok_def;
     if (IdentifierStr == "extern")
       return tok_extern;
@@ -48,7 +50,7 @@ int gettok()
       return tok_if;
     if (IdentifierStr == "then")
       return tok_then;
-    if (IdentifierStr == "kana_kuti")
+    if (IdentifierStr == "kanaKuti")
       return tok_else;
     if (IdentifierStr == "pakati")
       return tok_for;
@@ -86,7 +88,6 @@ int gettok()
       return tok_public;
     if (IdentifierStr == "private") 
       return tok_private;
-
     return tok_identifier;
   }
 
@@ -114,6 +115,8 @@ int gettok()
     if (LastChar != EOF)
       return gettok();
   }
+
+ 
 
   // Handle end of file.
   if (LastChar == EOF)

@@ -1,6 +1,0 @@
-
-basa test() {
-    nyora("Hello world")
-}
-
-test()

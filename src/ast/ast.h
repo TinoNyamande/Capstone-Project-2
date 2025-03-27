@@ -9,6 +9,7 @@
 
 extern std::unique_ptr<IRBuilder<>> Builder;
   
+  /// ExprAST - Base class for all expression nodes.
   class ExprAST
   {
   public:
@@ -275,46 +276,5 @@ public:
 
     Function *codegen();  // ✅ Declare codegen() method
 };
-class ClassAST {
-  std::string Name;
-  std::string Parent;
-  std::vector<std::unique_ptr<PrototypeAST>> Methods;
-  std::vector<std::string> Fields;
-
-public:
-  ClassAST(std::string name, std::string parent, std::vector<std::string> fields,
-           std::vector<std::unique_ptr<PrototypeAST>> methods)
-      : Name(std::move(name)), Parent(std::move(parent)), Fields(std::move(fields)), Methods(std::move(methods)) {}
-
-  Value *codegen();
-
-  // Getter function for Fields
-  const std::vector<std::string> &getFields() const { return Fields; }
-};
-
-/// AST for object instantiation (e.g., `new Dog()`)
-class NewExprAST : public ExprAST {
-  std::string ClassName;
-
-public:
-  NewExprAST(const std::string &className) : ClassName(className) {}
-  Value *codegen() override;
-};
-
-/// AST for member access (e.g., `dog.bark()`)
-class MemberExprAST : public ExprAST {
-  std::unique_ptr<ExprAST> Object;
-  std::string Member;
-  std::string ClassName;  // Store the class name
-
-public:
-  MemberExprAST(std::unique_ptr<ExprAST> object, std::string member, std::string className)
-      : Object(std::move(object)), Member(std::move(member)), ClassName(std::move(className)) {}
-
-  Value *codegen() override;
-};
-std::map<std::string, ClassAST> ClassTable;
-
-
 
 #endif 

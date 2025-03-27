@@ -15,6 +15,7 @@ std::unique_ptr<StandardInstrumentations> TheSI;
 std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 ExitOnError ExitOnErr;
 
+
 Value *LogErrorV(const char *Str)
 {
   LogError(Str);
@@ -70,7 +71,7 @@ Value *VariableExprAST::codegen()
   // Look this variable up in the function.
   AllocaInst *A = NamedValues[Name];
   if (!A)
-    return LogErrorV("Paita 'zita' risiri kuzivikanwa");
+    return LogErrorV("Unknown variable name");
 
   // Load the value.
   return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
@@ -117,7 +118,7 @@ Value *BinaryExprAST::codegen()
     // Look up the name.
     Value *Variable = NamedValues[LHSE->getName()];
     if (!Variable)
-      return LogErrorV("Paita 'zita' risiri kuzivikanwa");
+      return LogErrorV("Unknown variable name");
 
     Builder->CreateStore(Val, Variable);
     return Val;
@@ -197,7 +198,7 @@ Value *CallExprAST::codegen()
   {
     // Ensure `nyora` gets exactly one argument.
     if (Args.size() != 1)
-      return LogErrorV("nyora inotasira kupiwa izwi rekunyora");
+      return LogErrorV("nyora expects exactly one argument");
 
     // Generate code for the argument.
     Value *Arg = Args[0]->codegen();
@@ -228,7 +229,7 @@ Value *CallExprAST::codegen()
     }
     else
     {
-      return LogErrorV("mando iyi haikwanise kunyorwa ");
+      return LogErrorV("Unsupported type for nyora");
     }
   }
 
@@ -284,83 +285,6 @@ Value *IfExprAST::codegen() {
     return Constant::getNullValue(Type::getDoubleTy(*TheContext));
 }
 
-
-Value *FileOpenAST::codegen()
-{
-  Value *FilePathV = FilePath->codegen();
-  Value *ModeV = Mode->codegen();
-  if (!FilePathV || !ModeV)
-    return LogErrorV("Invalid file path or mode for open");
-
-  Function *OpenFunc = getFunction("openFile");
-  if (!OpenFunc)
-    return LogErrorV("openFile function not found");
-
-  return Builder->CreateCall(OpenFunc, {FilePathV, ModeV}, "openfile");
-}
-Value *FileReadAST::codegen()
-{
-  Value *FilePathV = FilePath->codegen();
-  if (!FilePathV)
-    return LogErrorV("Invalid file path for read");
-
-  Function *ReadFunc = getFunction("readFile");
-  if (!ReadFunc)
-    return LogErrorV("readFile function not found");
-
-  return Builder->CreateCall(ReadFunc, {FilePathV}, "readfile");
-}
-
-Value *FileWriteAST::codegen()
-{
-  Value *FileHandleV = FileHandle->codegen();
-  Value *ContentV = Content->codegen();
-  if (!FileHandleV || !ContentV)
-    return LogErrorV("Invalid file handle or content for write");
-
-  Function *WriteFunc = getFunction("writeFile");
-  if (!WriteFunc)
-    return LogErrorV("writeFile function not found");
-
-  return Builder->CreateCall(WriteFunc, {FileHandleV, ContentV}, "writefile");
-}
-Value *FileAppendAST::codegen()
-{
-  Value *FileHandleV = FileHandle->codegen();
-  Value *ContentV = Content->codegen();
-  if (!FileHandleV || !ContentV)
-    return LogErrorV("Invalid file handle or content for append");
-
-  Function *AppendFunc = getFunction("appendToFile");
-  if (!AppendFunc)
-    return LogErrorV("appendToFile function not found");
-
-  return Builder->CreateCall(AppendFunc, {FileHandleV, ContentV}, "appendfile");
-}
-Value *FileCreateAST::codegen()
-{
-  Value *FilePathV = FilePath->codegen();
-  if (!FilePathV)
-    return LogErrorV("Invalid file path for create");
-
-  Function *CreateFunc = getFunction("createFile");
-  if (!CreateFunc)
-    return LogErrorV("createFile function not found");
-
-  return Builder->CreateCall(CreateFunc, {FilePathV}, "createfile");
-}
-Value *FileDeleteAST::codegen()
-{
-  Value *FilePathV = FilePath->codegen();
-  if (!FilePathV)
-    return LogErrorV("Invalid file path for delete");
-
-  Function *DeleteFunc = getFunction("deleteFile");
-  if (!DeleteFunc)
-    return LogErrorV("deleteFile function not found");
-
-  return Builder->CreateCall(DeleteFunc, {FilePathV}, "deletefile");
-}
 
 // Output for-loop as:
 //   var = alloca double
@@ -587,77 +511,11 @@ Function *FunctionAST::codegen()
   return TheFunction;
 }
 
-Value *ClassAST::codegen() {
-  fprintf(stderr, "Generating LLVM IR for class: %s\n", Name.c_str());
-
-  std::vector<Type *> FieldTypes;
-  for (const auto &Field : Fields) {
-      FieldTypes.push_back(Type::getDoubleTy(*TheContext));  // Assume all fields are `double` for now.
-  }
-
-  StructType *ClassStruct = StructType::create(*TheContext, FieldTypes, Name);
-  TheModule->getOrInsertGlobal(Name, ClassStruct);
-
-  fprintf(stderr, "Class %s generated with %lu fields.\n", Name.c_str(), Fields.size());
-  return nullptr;
-}
-
-Value *NewExprAST::codegen() {
-  fprintf(stderr, "Generating LLVM IR for object instantiation: %s\n", ClassName.c_str());
-
-  //StructType *ClassStruct = TheModule->getTypeByName(ClassName);
-  StructType *ClassStruct = StructType::getTypeByName(*TheContext, ClassName);
-
-  if (!ClassStruct)
-      return LogErrorV("Unknown class name in object instantiation");
-
-  Function *TheFunction = Builder->GetInsertBlock()->getParent();
-  IRBuilder<> TmpB(&*TheFunction->getEntryBlock().begin());
-      
-      
-  Value *Alloc = TmpB.CreateAlloca(ClassStruct, nullptr, ClassName.c_str());
-
-  fprintf(stderr, "Object of class %s allocated.\n", ClassName.c_str());
-  return Alloc;
-}
-Value *MemberExprAST::codegen() {
-  fprintf(stderr, "Generating LLVM IR for member access: %s.%s\n", ClassName.c_str(), Member.c_str());
-
-  Value *Obj = Object->codegen();
-  if (!Obj)
-      return LogErrorV("Invalid object in member access");
-
-  // Use the updated method to retrieve the class type
-  StructType *ClassStruct = StructType::getTypeByName(*TheContext, ClassName);
-  if (!ClassStruct)
-      return LogErrorV("Unknown class type in member access");
-
-  // Find the field index
-  auto ClassIt = ClassTable.find(ClassName);
-  if (ClassIt == ClassTable.end())
-      return LogErrorV("Class not found");
-
-
-  const auto &Fields = ClassIt->second.getFields();
-  //const auto &Fields = ClassIt->second.Fields;
-  auto It = std::find(Fields.begin(), Fields.end(), Member);
-  if (It == Fields.end())
-      return LogErrorV("Unknown field or method");
-
-  int Index = std::distance(Fields.begin(), It);
-  Value *FieldPtr = Builder->CreateStructGEP(ClassStruct, Obj, Index, Member);
-  
-  //return Builder->CreateLoad(FieldPtr, Member.c_str());
-  Type *FieldType = ClassStruct->getElementType(Index);
-  return Builder->CreateLoad(FieldType, FieldPtr, Member.c_str());
-}
-
-
 //===----------------------------------------------------------------------===//
 // Top-Level parsing and JIT Driver
 //===----------------------------------------------------------------------===//
 
-void InitializeModuleAndManagers()
+ void InitializeModuleAndManagers()
 {
   // Open a new context and module.
   TheContext = std::make_unique<LLVMContext>();
@@ -697,15 +555,13 @@ void InitializeModuleAndManagers()
   PB.crossRegisterProxies(*TheLAM, *TheFAM, *TheCGAM, *TheMAM);
 }
 
-void HandleDefinition()
+ void HandleDefinition()
 {
   if (auto FnAST = ParseDefinition())
   {
     if (auto *FnIR = FnAST->codegen())
     {
-      //fprintf(stderr, "Read function definition:");
-      //FnIR->print(errs());
-      //fprintf(stderr, "\n");
+
       ExitOnErr(TheJIT->addModule(
           ThreadSafeModule(std::move(TheModule), std::move(TheContext))));
       InitializeModuleAndManagers();
@@ -718,7 +574,7 @@ void HandleDefinition()
   }
 }
 
-void HandleExtern()
+ void HandleExtern()
 {
   if (auto ProtoAST = ParseExtern())
   {
@@ -737,9 +593,7 @@ void HandleExtern()
   }
 }
 
-
-
-void HandleTopLevelExpression()
+ void HandleTopLevelExpression()
 {
   // Evaluate a top-level expression into an anonymous function.
   if (auto FnAST = ParseTopLevelExpr())
@@ -775,7 +629,7 @@ void HandleTopLevelExpression()
 }
 
 /// top ::= definition | external | expression | ';'
-void MainLoop()
+ void MainLoop()
 {
   while (true)
   {
