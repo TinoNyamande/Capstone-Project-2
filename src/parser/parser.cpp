@@ -40,9 +40,15 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  std::unique_ptr<ExprAST> ParseExpression();
 
 
-
+// numberexpr ::= number
+static std::unique_ptr<ExprAST> ParseNumberExpr()
+{
+  auto Result = std::make_unique<NumberExprAST>(NumVal);
+  getNextToken(); // consume the number
+  return std::move(Result);
+}
  
- static std::unique_ptr<ExprAST> ParseWhileExpr() {
+  std::unique_ptr<ExprAST> ParseWhileExpr() {
      getNextToken(); // Eat 'while'
  
      if (CurTok != '(')
@@ -86,7 +92,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  
  
  /// parenexpr ::= '(' expression ')'
- static std::unique_ptr<ExprAST> ParseParenExpr()
+  std::unique_ptr<ExprAST> ParseParenExpr()
  {
    getNextToken(); // eat (.
    auto V = ParseExpression();
@@ -102,13 +108,10 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  /// identifierexpr
  ///   ::= identifier
  ///   ::= identifier '(' expression* ')'
- static std::unique_ptr<ExprAST> ParseIdentifierExpr()
+  std::unique_ptr<ExprAST> ParseIdentifierExpr()
  {
    std::string IdName = IdentifierStr;
-   if (IdName == "open" || IdName == "read" || IdName == "write" || IdName == "delete")
-   {
-     return ParseFileOperation();
-   }
+
  
    getNextToken(); // eat identifier.
  
@@ -145,7 +148,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  /// ifexpr ::= 'if' expression 'then' expression 'else' expression
  /// ifexpr ::= 'if' '(' expression ')' '{' expression '}' ('else' '{' expression '}')?
  /// ifexpr ::= 'if' '(' expression ')' '{' expression '}' ('else' '{' expression '}')?
- static std::unique_ptr<ExprAST> ParseIfExpr() {
+  std::unique_ptr<ExprAST> ParseIfExpr() {
      getNextToken(); // Eat 'if'
  
      if (CurTok != '(')
@@ -209,7 +212,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
      return std::make_unique<IfExprAST>(std::move(Cond), std::move(ThenStatements), std::move(ElseStatements));
  }
  
- static std::unique_ptr<ExprAST> ParseReturnExpr()
+  std::unique_ptr<ExprAST> ParseReturnExpr()
  {
    getNextToken(); // eat the return keyword
  
@@ -220,7 +223,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
    return std::make_unique<ReturnExprAST>(std::move(RetVal));
  }
  /// forexpr ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
- static std::unique_ptr<ExprAST> ParseForExpr()
+  std::unique_ptr<ExprAST> ParseForExpr()
  {
    getNextToken(); // eat the for.
  
@@ -269,7 +272,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  
  /// varexpr ::= 'var' identifier ('=' expression)?
  //                    (',' identifier ('=' expression)?)* 'in' expression
- static std::unique_ptr<ExprAST> ParseVarExpr()
+  std::unique_ptr<ExprAST> ParseVarExpr()
  {
    getNextToken(); // eat the var.
  
@@ -325,7 +328,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  ///   ::= ifexpr
  ///   ::= forexpr
  ///   ::= varexpr
- static std::unique_ptr<ExprAST> ParsePrimary()
+  std::unique_ptr<ExprAST> ParsePrimary()
  {
    switch (CurTok)
    {
@@ -362,19 +365,14 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
      return Result;
    }
  
-   // Handle file operation tokens.
-   case tok_open:
-   case tok_write:
-   case tok_read:
-   case tok_delete:
-     return ParseFileOperation(); // Delegate to ParseFileOperation.
+
    }
  }
  
  /// unary
  ///   ::= primary
  ///   ::= '!' unary
- static std::unique_ptr<ExprAST> ParseUnary()
+  std::unique_ptr<ExprAST> ParseUnary()
  {
    // If the current token is not an operator, it must be a primary expr.
    if (!isascii(CurTok) || CurTok == '(' || CurTok == ',')
@@ -390,7 +388,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  
  /// binoprhs
  ///   ::= ('+' unary)*
- static std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec,
+  std::unique_ptr<ExprAST> ParseBinOpRHS(int ExprPrec,
                                                std::unique_ptr<ExprAST> LHS)
  {
    // If this is a binop, find its precedence.
@@ -431,7 +429,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  /// expression
  ///   ::= unary binoprhs
  ///
- static std::unique_ptr<ExprAST> ParseExpression()
+  std::unique_ptr<ExprAST> ParseExpression()
  {
    // Parse the left-hand side of the expression.
    auto LHS = ParseUnary();
@@ -452,7 +450,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  ///   ::= id '(' id* ')'
  ///   ::= binary LETTER number? (id, id)
  ///   ::= unary LETTER (id)
- static std::unique_ptr<PrototypeAST> ParsePrototype()
+  std::unique_ptr<PrototypeAST> ParsePrototype()
  {
    std::string FnName;
  
@@ -518,7 +516,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  }
  
  /// definition ::= 'def' prototype expression
- static std::unique_ptr<FunctionAST> ParseDefinition() {
+  std::unique_ptr<FunctionAST> ParseDefinition() {
      getNextToken(); // Eat 'def'
      auto Proto = ParsePrototype();
      if (!Proto)
@@ -553,7 +551,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  
  
  /// toplevelexpr ::= expression
- static std::unique_ptr<FunctionAST> ParseTopLevelExpr()
+  std::unique_ptr<FunctionAST> ParseTopLevelExpr()
  {
    if (auto E = ParseExpression())
    {
@@ -571,7 +569,7 @@ std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
  }
  
  /// external ::= 'extern' prototype
- static std::unique_ptr<PrototypeAST> ParseExtern()
+  std::unique_ptr<PrototypeAST> ParseExtern()
  {
    getNextToken(); // eat extern.
    return ParsePrototype();

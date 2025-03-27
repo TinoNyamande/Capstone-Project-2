@@ -84,5 +84,6 @@
         "numeric": "cpp",
         "queue": "cpp",
         "cstdarg": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "C:/Users/hp i5/Documents/HCS/Capstone Project/src"
 }
