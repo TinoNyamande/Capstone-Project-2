@@ -160,6 +160,102 @@ extern "C" DLLEXPORT void bvisaFaera(const char *filePath)
   }
 }
 
+extern "C" DLLEXPORT void wedzera(double a, double b) // Addition
+{  
+    double result = a+b;
+    std::cout<<result << "\n";
+}
+
+extern "C" DLLEXPORT void bvisaNamba(double a, double b) // Subtraction
+{
+    double result = a-b;
+    std::cout<< result << "\n";
+}
+
+extern "C" DLLEXPORT void wedzeranisa(double a, double b) // Multiplication
+{
+  double result = a*b;
+  std::cout<< result << "\n";
+}
+
+extern "C" DLLEXPORT void govana(double a, double b) // Division
+{
+    if (b == 0)
+    {
+        std::cerr << "Kukanganisa: Haugone kupatsanura ne zero!\n"; // Error: Cannot divide by zero
+        
+    }
+    double result = a/b;
+    std::cout<< result << "\n";
+    
+}
+extern "C" DLLEXPORT void nambaInosara(int a, int b) // Modulus (Remainder)
+{
+  double result = a%b;
+  std::cout<< result << "\n";
+  
+}
+
+extern "C" DLLEXPORT void simba(double base, double exponent) // Power
+{
+  double result = pow(base,exponent);
+  std::cout<< result << "\n";
+}
+
+extern "C" DLLEXPORT void tsvagaMudzi(double value) // Square Root
+{
+    if (value < 0)
+    {
+        std::cerr << "Kukanganisa: Haugone kutora mudzi wesikweya we nhamba isina kugadzikana!\n";
+     
+    }
+    double result = sqrt(value);
+    std::cout<< result << "\n";
+   
+}
+
+extern "C" DLLEXPORT void logarithm(double value) // Natural Logarithm (ln)
+{
+    if (value <= 0)
+    {
+        std::cerr << "Kukanganisa: Logarithm inoshanda pane nhamba huru kupfuura zero chete!\n";
+      
+    }
+    double result = log(value);
+    std::cout<< result << "\n";
+    
+}
+
+extern "C" DLLEXPORT void expo(double value) // Exponential (e^x)
+{
+  double result = exp(value);
+  std::cout<< result << "\n";
+   
+}
+
+// Trigonometric Functions
+extern "C" DLLEXPORT void  saini(double angle) // Sine
+{
+  double result = sin(angle);
+  std::cout<< result << "\n";
+  
+}
+
+extern "C" DLLEXPORT void cosi(double angle) // Cosine
+{
+  double result = cos(angle);
+  std::cout<< result << "\n";
+  
+}
+
+extern "C" DLLEXPORT void tanhi(double angle) // Tangent
+
+{
+  double result = tan(angle);
+  std::cout<< result << "\n";
+
+}
+
 
 //===----------------------------------------------------------------------===//
 // Main driver code.
@@ -202,6 +298,19 @@ int main(int argc, char **argv)
     FunctionProtos["verengaFaera"] = std::make_unique<PrototypeAST>("verengaFaera", std::vector<std::string>{"filePath"});
     FunctionProtos["nyoraFaera"] = std::make_unique<PrototypeAST>("nyoraFaera", std::vector<std::string>{"fileHandle", "content"});
     FunctionProtos["bvisaFaera"] = std::make_unique<PrototypeAST>("bvisaFaera", std::vector<std::string>{"filePath"});
+    FunctionProtos["wedzera"] = std::make_unique<PrototypeAST>("wedzera", std::vector<std::string>{"a", "b"});
+FunctionProtos["bvisaNamba"] = std::make_unique<PrototypeAST>("bvisaNamba", std::vector<std::string>{"a", "b"});
+FunctionProtos["wedzeranisa"] = std::make_unique<PrototypeAST>("wedzeranisa", std::vector<std::string>{"a", "b"});
+FunctionProtos["govana"] = std::make_unique<PrototypeAST>("govana", std::vector<std::string>{"a", "b"});
+FunctionProtos["nambaInosara"] = std::make_unique<PrototypeAST>("nambaInosara", std::vector<std::string>{"a", "b"});
+FunctionProtos["simba"] = std::make_unique<PrototypeAST>("simba", std::vector<std::string>{"base", "exponent"});
+FunctionProtos["tsvagaMudzi"] = std::make_unique<PrototypeAST>("tsvagaMudzi", std::vector<std::string>{"value"});
+FunctionProtos["logarithm"] = std::make_unique<PrototypeAST>("logarithm", std::vector<std::string>{"value"});
+FunctionProtos["expo"] = std::make_unique<PrototypeAST>("expo", std::vector<std::string>{"value"});
+FunctionProtos["saini"] = std::make_unique<PrototypeAST>("saini", std::vector<std::string>{"angle"});
+FunctionProtos["cosi"] = std::make_unique<PrototypeAST>("cosi", std::vector<std::string>{"angle"});
+FunctionProtos["tanhi"] = std::make_unique<PrototypeAST>("tanhi", std::vector<std::string>{"angle"});
+
   };
 
   AddBuiltinFunctions();
