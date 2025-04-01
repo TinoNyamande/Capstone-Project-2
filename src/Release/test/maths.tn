@@ -1,18 +1,20 @@
 
-
-wedzera(5.0, 1.0)
-bvisaNamba(10.0, 2.0)  
-wedzeranisa(7.0, 2.0)
-govana(9.0, 3.0)   
-
-
-nambaInosara(10, 3)    
-simba(2, 3)   
-tsvagaMudzi(25)  
+nyora("Hello")
+nyora(wedzera(5, 1))
+nyora(bvisaNamba(10, 2))
+nyora(wedzeranisa(7, 2))
+nyora(govana(9.0, 3.0))   
 
 
-saini(0)   
-cosi(0)    
-tanhi(45)
+nyora(nambaInosara(10, 3))   
+nyora(simba(2, 3))   
+nyora(tsvagaMudzi(25))
+
+
+nyora(saini(0))
+nyora(cosi(0))   
+nyora(tanhi(45))
+
+
 
 

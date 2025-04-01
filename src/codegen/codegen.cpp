@@ -187,67 +187,102 @@ Value *WhileExprAST::codegen() {
 }
 
 
+Function *getPrintfFunction(Module *TheModule, LLVMContext &TheContext)
+{
+    // Check if printf is already declared
+    if (Function *F = TheModule->getFunction("printf"))
+        return F;
+
+    // Create printf function type: int printf(char*, ...)
+    std::vector<Type *> printfArgs;
+    llvm::PointerType::get(llvm::Type::getInt8Ty(TheContext), 0);
+ // Corrected usage
+
+    FunctionType *printfType =
+        FunctionType::get(Type::getInt32Ty(TheContext), printfArgs, true);
+
+    Function *printfFunc =
+        Function::Create(printfType, Function::ExternalLinkage, "printf", TheModule);
+
+    return printfFunc;
+}
+
 Value *CallExprAST::codegen()
 {
-  // Look up the function in the module.
-  Function *CalleeF = getFunction(Callee);
-  if (!CalleeF)
-    return LogErrorV("'basa' iri harina kuwanikwa");
+    
 
-  if (Callee == "nyora")
-  {
-    // Ensure `nyora` gets exactly one argument.
-    if (Args.size() != 1)
-      return LogErrorV("nyora expects exactly one argument");
+    // Look up the function in the module.
+    Function *CalleeF = getFunction(Callee);
+    if (!CalleeF)
+        return LogErrorV("'basa' iri harina kuwanikwa");
 
-    // Generate code for the argument.
-    Value *Arg = Args[0]->codegen();
-    if (!Arg)
-      return nullptr;
-
-    // Handle different argument types.
-    if (Arg->getType()->isDoubleTy())
+    if (Callee == "nyora")
     {
-      // Convert double to string.
-      char buffer[64];
-      snprintf(buffer, sizeof(buffer), "%f", NumVal); // NumVal from lexer
-      auto *StrVal = Builder->CreateGlobalStringPtr(buffer, "numstr");
-      return Builder->CreateCall(CalleeF, {StrVal}, "nyoracall");
-    }
-    else if (Arg->getType()->isIntegerTy())
-    {
-      // Convert integer to string.
-      char buffer[64];
-      snprintf(buffer, sizeof(buffer), "%d", static_cast<int>(NumVal));
-      auto *StrVal = Builder->CreateGlobalStringPtr(buffer, "numstr");
-      return Builder->CreateCall(CalleeF, {StrVal}, "nyoracall");
-    }
-    else if (Arg->getType()->isPointerTy())
-    {
-      // Handle string directly.
-      return Builder->CreateCall(CalleeF, {Arg}, "nyoracall");
-    }
-    else
-    {
-      return LogErrorV("Unsupported type for nyora");
-    }
-  }
+        
 
-  // Handle other function calls.
-  if (CalleeF->arg_size() != Args.size())
-    return LogErrorV("Incorrect # arguments passed");
+        // Ensure `nyora` gets exactly one argument.
+        if (Args.size() != 1)
+            return LogErrorV("nyora expects exactly one argument");
 
-  std::vector<Value *> ArgsV;
-  for (unsigned i = 0, e = Args.size(); i != e; ++i)
-  {
-    auto ArgV = Args[i]->codegen();
-    if (!ArgV)
-      return nullptr;
-    ArgsV.push_back(ArgV);
-  }
+        // Generate code for the argument.
+        Value *Arg = Args[0]->codegen();
+        if (!Arg)
+            return nullptr;
 
-  return Builder->CreateCall(CalleeF, ArgsV, "calltmp");
+        
+
+        // Retrieve printf function
+        Function *printfFunc = getPrintfFunction(TheModule.get(), *TheContext);
+        if (!printfFunc)
+            return LogErrorV("Failed to declare printf function");
+
+        // Check if the argument is a double or integer
+        if (Arg->getType()->isDoubleTy())
+        {
+            
+            Value *formatStr = Builder->CreateGlobalStringPtr("%.5f\n", "fmt"); // 5 decimal places for floats
+            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
+        }
+        else if (Arg->getType()->isIntegerTy())
+        {
+            
+            Value *formatStr = Builder->CreateGlobalStringPtr("%d\n", "fmt"); // Format for integers
+            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
+        }
+        else if (Arg->getType()->isPointerTy())
+        {
+            
+            Value *formatStr = Builder->CreateGlobalStringPtr("%s\n", "fmt"); // Use %s for strings
+            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
+        }
+        else
+        {
+            return LogErrorV("Unsupported type for nyora");
+        }
+    }
+
+    // Handle other function calls.
+    if (CalleeF->arg_size() != Args.size())
+        return LogErrorV("Incorrect # arguments passed");
+
+    std::vector<Value *> ArgsV;
+    for (unsigned i = 0, e = Args.size(); i != e; ++i)
+    {
+        auto ArgV = Args[i]->codegen();
+        if (!ArgV)
+            return nullptr;
+        ArgsV.push_back(ArgV);
+    }
+
+    Value *Call = Builder->CreateCall(CalleeF, ArgsV, "calltmp");
+
+    // If the function returns void, return nullptr.
+    if (CalleeF->getReturnType()->isVoidTy())
+        return nullptr;
+
+    return Call;
 }
+
 
 Value *IfExprAST::codegen() {
     Value *CondV = Cond->codegen();

@@ -160,25 +160,25 @@ extern "C" DLLEXPORT void bvisaFaera(const char *filePath)
   }
 }
 
-extern "C" DLLEXPORT void wedzera(double a, double b) // Addition
+extern "C" DLLEXPORT double wedzera(double a, double b) // Addition
 {  
     double result = a+b;
-    std::cout<<result << "\n";
+    return result;
 }
 
-extern "C" DLLEXPORT void bvisaNamba(double a, double b) // Subtraction
+extern "C" DLLEXPORT double bvisaNamba(double a, double b) // Subtraction
 {
     double result = a-b;
-    std::cout<< result << "\n";
+    return result;
 }
 
-extern "C" DLLEXPORT void wedzeranisa(double a, double b) // Multiplication
+extern "C" DLLEXPORT double wedzeranisa(double a, double b) // Multiplication
 {
   double result = a*b;
-  std::cout<< result << "\n";
+  return result;
 }
 
-extern "C" DLLEXPORT void govana(double a, double b) // Division
+extern "C" DLLEXPORT double govana(double a, double b) // Division
 {
     if (b == 0)
     {
@@ -186,23 +186,23 @@ extern "C" DLLEXPORT void govana(double a, double b) // Division
         
     }
     double result = a/b;
-    std::cout<< result << "\n";
+    return result;
     
 }
-extern "C" DLLEXPORT void nambaInosara(int a, int b) // Modulus (Remainder)
+extern "C" DLLEXPORT double nambaInosara(double a, double b) // Modulus (Remainder)
 {
-  double result = a%b;
-  std::cout<< result << "\n";
+  double result = int(a)%int(b);
+  return result;
   
 }
 
-extern "C" DLLEXPORT void simba(double base, double exponent) // Power
+extern "C" DLLEXPORT double simba(double base, double exponent) // Power
 {
   double result = pow(base,exponent);
-  std::cout<< result << "\n";
+  return result;
 }
 
-extern "C" DLLEXPORT void tsvagaMudzi(double value) // Square Root
+extern "C" DLLEXPORT double tsvagaMudzi(double value) // Square Root
 {
     if (value < 0)
     {
@@ -210,11 +210,11 @@ extern "C" DLLEXPORT void tsvagaMudzi(double value) // Square Root
      
     }
     double result = sqrt(value);
-    std::cout<< result << "\n";
+    return result;
    
 }
 
-extern "C" DLLEXPORT void logarithm(double value) // Natural Logarithm (ln)
+extern "C" DLLEXPORT double logarithm(double value) // Natural Logarithm (ln)
 {
     if (value <= 0)
     {
@@ -222,37 +222,37 @@ extern "C" DLLEXPORT void logarithm(double value) // Natural Logarithm (ln)
       
     }
     double result = log(value);
-    std::cout<< result << "\n";
+    return result;
     
 }
 
-extern "C" DLLEXPORT void expo(double value) // Exponential (e^x)
+extern "C" DLLEXPORT double expo(double value) // Exponential (e^x)
 {
   double result = exp(value);
-  std::cout<< result << "\n";
+  return result;
    
 }
 
 // Trigonometric Functions
-extern "C" DLLEXPORT void  saini(double angle) // Sine
+extern "C" DLLEXPORT double  saini(double angle) // Sine
 {
   double result = sin(angle);
-  std::cout<< result << "\n";
+  return result;
   
 }
 
-extern "C" DLLEXPORT void cosi(double angle) // Cosine
+extern "C" DLLEXPORT double cosi(double angle) // Cosine
 {
   double result = cos(angle);
-  std::cout<< result << "\n";
+  return result;
   
 }
 
-extern "C" DLLEXPORT void tanhi(double angle) // Tangent
+extern "C" DLLEXPORT double tanhi(double angle) // Tangent
 
 {
   double result = tan(angle);
-  std::cout<< result << "\n";
+  return result;
 
 }
 

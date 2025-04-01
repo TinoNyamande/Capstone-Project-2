@@ -1,0 +1,5 @@
+zita sum = 1 mu
+pakati i = 1, 10 mu
+  nyora(sum);
+  i= i+1
+  sum = sum + i;
