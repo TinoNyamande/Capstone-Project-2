@@ -223,52 +223,74 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
    return std::make_unique<ReturnExprAST>(std::move(RetVal));
  }
  /// forexpr ::= 'for' identifier '=' expr ',' expr (',' expr)? 'in' expression
-  std::unique_ptr<ExprAST> ParseForExpr()
- {
-   getNextToken(); // eat the for.
- 
-   if (CurTok != tok_identifier)
-     return  LogError("yaitirwa zita remusiyano mushure me 'for'");
- 
-   std::string IdName = IdentifierStr;
-   getNextToken(); // eat identifier.
- 
-   if (CurTok != '=')
-     return LogError("yaitirwa '=' mushure me 'for'");
-   getNextToken(); // eat '='.
- 
-   auto Start = ParseExpression();
-   if (!Start)
-     return nullptr;
-   if (CurTok != ',')
-     return LogError("yaitirwa ',' mushure me kukosha kwekutanga mu 'for'");
-   getNextToken();
- 
-   auto End = ParseExpression();
-   if (!End)
-     return nullptr;
- 
-   // The step value is optional.
-   std::unique_ptr<ExprAST> Step;
-   if (CurTok == ',')
-   {
-     getNextToken();
-     Step = ParseExpression();
-     if (!Step)
-       return nullptr;
-   }
- 
-   if (CurTok != tok_in)
-     return LogError("yaitirwa 'in' mushure me 'for'");
-   getNextToken(); // eat 'in'.
- 
-   auto Body = ParseExpression();
-   if (!Body)
-     return nullptr;
- 
-   return std::make_unique<ForExprAST>(IdName, std::move(Start), std::move(End),
-                                       std::move(Step), std::move(Body));
- }
+ std::unique_ptr<ExprAST> ParseForExpr() {
+  getNextToken(); // eat 'for'
+
+  if (CurTok != '(')
+      return LogError("yaitirwa '(' mushure me 'for'");
+  getNextToken(); // eat '('.
+
+  // Expect variable name inside parentheses
+  if (CurTok != tok_identifier)
+      return LogError("yaitirwa zita remusiyano mukati me 'for ()'");
+  
+  std::string IdName = IdentifierStr;
+  getNextToken(); // eat identifier.
+
+  if (CurTok != '=')
+      return LogError("yaitirwa '=' mushure me zita remusiyano mu 'for ()'");
+  getNextToken(); // eat '='.
+
+  auto Start = ParseExpression();
+  if (!Start)
+      return nullptr;
+
+  if (CurTok != ',')
+      return LogError("yaitirwa ',' mushure me kukosha kwekutanga mu 'for ()'");
+  getNextToken(); // eat ','.
+
+  auto End = ParseExpression();
+  if (!End)
+      return nullptr;
+
+  // The step value is optional.
+  std::unique_ptr<ExprAST> Step;
+  if (CurTok == ',') {
+      getNextToken(); // eat ','.
+      Step = ParseExpression();
+      if (!Step)
+          return nullptr;
+  }
+
+  if (CurTok != ')')
+      return LogError("yaitirwa ')' mushure me 'for ()' conditions");
+  getNextToken(); // eat ')'.
+
+  // Expect opening curly brace for the loop body.
+  if (CurTok != '{')
+      return LogError("yaitirwa '{' mushure me 'for ()'");
+  getNextToken(); // eat '{'.
+
+  // Parse multiple expressions inside the loop body.
+  std::vector<std::unique_ptr<ExprAST>> BodyStmts;
+  while (CurTok != '}' && CurTok != tok_eof) {
+      auto Expr = ParseExpression();
+      if (!Expr)
+          return nullptr;
+      BodyStmts.push_back(std::move(Expr));
+  }
+
+  if (CurTok != '}')
+      return LogError("yaitirwa '}' mushure me loop body");
+  getNextToken(); // eat '}'.
+
+  // Create a BlockExprAST to store multiple statements.
+  auto Body = std::make_unique<BlockExprAST>(std::move(BodyStmts));
+
+  return std::make_unique<ForExprAST>(IdName, std::move(Start), std::move(End),
+                                      std::move(Step), std::move(Body));
+}
+
  
  /// varexpr ::= 'var' identifier ('=' expression)?
  //                    (',' identifier ('=' expression)?)* 'in' expression

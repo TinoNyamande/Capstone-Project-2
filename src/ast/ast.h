@@ -115,23 +115,39 @@ public:
 
     Value *codegen() override;
 };
+class BlockExprAST : public ExprAST
+  {
+    std::vector<std::unique_ptr<ExprAST>> Body;
 
+  public:
+    BlockExprAST(std::vector<std::unique_ptr<ExprAST>> Body)
+        : Body(std::move(Body)) {}
+
+    // New method to access the statements
+    const std::vector<std::unique_ptr<ExprAST>> &getBody() const
+    {
+      return Body;
+    }
+
+    
+    Value *codegen() override;
+  };
   /// ForExprAST - Expression class for for/in.
   class ForExprAST : public ExprAST
   {
     std::string VarName;
-    std::unique_ptr<ExprAST> Start, End, Step, Body;
+    std::unique_ptr<ExprAST> Start, End, Step;
+    std::unique_ptr<BlockExprAST> Body;
 
   public:
     ForExprAST(const std::string &VarName, std::unique_ptr<ExprAST> Start,
                std::unique_ptr<ExprAST> End, std::unique_ptr<ExprAST> Step,
-               std::unique_ptr<ExprAST> Body)
+               std::unique_ptr<BlockExprAST> Body)
         : VarName(VarName), Start(std::move(Start)), End(std::move(End)),
           Step(std::move(Step)), Body(std::move(Body)) {}
 
     Value *codegen() override;
   };
-
   /// VarExprAST - Expression class for var/in
   class VarExprAST : public ExprAST
   {
@@ -276,5 +292,8 @@ public:
 
     Function *codegen();  // ✅ Declare codegen() method
 };
+
+
+
 
 #endif 
