@@ -3,9 +3,9 @@
 #include <fstream>
 #include <cctype>
 
-std::string IdentifierStr; // Filled in if tok_identifier
+std::string IdentifierStr; 
 double NumVal;
-std::ifstream InputFile; // Filled in if tok_number
+std::ifstream InputFile; 
 std::map<std::string, llvm::GlobalVariable *> GlobalNamedValues;
 
 int gettok()
@@ -62,16 +62,10 @@ int gettok()
       return tok_unary;
     if (IdentifierStr == "zita")
       return tok_var;
+    if (IdentifierStr == "globalvar")
+      return tok_globalvar;
     if (IdentifierStr == "dzosa")
       return tok_return;
-    if (IdentifierStr == "vhura")
-      return tok_open;
-    // if (IdentifierStr == "nyora")
-    //   return tok_write;
-    if (IdentifierStr == "verenga")
-      return tok_read;
-    if (IdentifierStr == "bvisa")
-      return tok_delete;
     if (IdentifierStr == "kusvika")
       return tok_while;
     if (IdentifierStr == "ita")

@@ -50,59 +50,38 @@ extern const char *FileBufferPtr;
 enum Token
 {
   tok_eof = -1,
-
-
-  // commands
   tok_def = -2,
   tok_extern = -3,
-
-  // primary
   tok_identifier = -4,
   tok_number = -5,
-
-  // control
   tok_if = -6,
   tok_then = -7,
   tok_else = -8,
   tok_for = -9,
   tok_in = -10,
-
-  // operators
   tok_binary = -11,
   tok_unary = -12,
-
-  // var definition
   tok_var = -13,
   tok_return = -14,
   tok_string = -15,
-  tok_open = -16,
-  tok_read = -17,
-  tok_write = -18,
-  tok_append = -19,
-  tok_close = -20,
-  tok_delete = -21,
-  tok_while = -22,
-  tok_do = -23,
-
-  //classes
-  tok_class = -6,
-  tok_new = -7,
-  tok_this = -8,
-  tok_extends = -9,
-  tok_public = -10,
-  tok_private = -11,
-  tok_dot = '.',  // Object member access (e.g., obj.method)
-  tok_arrow = -12, // Pointer-like access (optional)
-  tok_semicolon = -50
-
-
-
+  tok_while = -16,
+  tok_do = -17,
+  tok_class = -18,
+  tok_new = -19,
+  tok_this = -20,
+  tok_extends = -21,
+  tok_public = -21,
+  tok_private = -22,
+  tok_dot = -23,  
+  tok_arrow = -24, 
+  tok_semicolon = -25,
+  tok_globalvar = -26,
 };
 
 extern std::ifstream InputFile;
 extern std::string IdentifierStr; 
 extern double NumVal;   
-extern std::map<std::string, GlobalVariable *> GlobalNamedValues;
+
 int gettok();
 
 #endif

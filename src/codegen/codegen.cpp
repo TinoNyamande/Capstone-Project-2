@@ -14,10 +14,12 @@ std::unique_ptr<PassInstrumentationCallbacks> ThePIC;
 std::unique_ptr<StandardInstrumentations> TheSI;
 std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 ExitOnError ExitOnErr;
+static std::map<std::string, GlobalVariable*> GlobalNamedValues;
 
 
 Value *LogErrorV(const char *Str)
 {
+
   LogError(Str);
   return nullptr;
 }
@@ -66,16 +68,6 @@ Value *StringExprAST::codegen()
   return Builder->CreateGlobalStringPtr(Val, "str");
 }
 
-Value *VariableExprAST::codegen()
-{
-  // Look this variable up in the function.
-  AllocaInst *A = NamedValues[Name];
-  if (!A)
-    return LogErrorV("Unknown variable name");
-
-  // Load the value.
-  return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
-}
 Value *ReturnExprAST::codegen()
 {
   Value *RetValV = RetVal->codegen();
@@ -100,30 +92,36 @@ Value *UnaryExprAST::codegen()
 
 Value *BinaryExprAST::codegen()
 {
-  // Special case '=' because we don't want to emit the LHS as an expression.
-  if (Op == '=')
-  {
-    // Assignment requires the LHS to be an identifier.
-    // This assume we're building without RTTI because LLVM builds that way by
-    // default.  If you build LLVM with RTTI this can be changed to a
-    // dynamic_cast for automatic error checking.
-    VariableExprAST *LHSE = static_cast<VariableExprAST *>(LHS.get());
+  if (Op == '=') {
+    // Handle assignment
+    VariableExprAST *LHSE = static_cast<VariableExprAST*>(LHS.get());
     if (!LHSE)
       return LogErrorV("destination of '=' must be a variable");
-    // Codegen the RHS.
+      
     Value *Val = RHS->codegen();
     if (!Val)
       return nullptr;
 
-    // Look up the name.
-    Value *Variable = NamedValues[LHSE->getName()];
+    // Check both local and global variables
+    Value *Variable = nullptr;
+    
+    // 1. Check local variables
+    if (NamedValues.count(LHSE->getName())) {
+      Variable = NamedValues[LHSE->getName()];
+    }
+    // 2. Check global variables
+    else if (GlobalNamedValues.count(LHSE->getName())) {
+      Variable = GlobalNamedValues[LHSE->getName()];
+    }
+    
     if (!Variable)
-      return LogErrorV("Unknown variable name");
+      return LogErrorV(("Unknown variable name: " + LHSE->getName()).c_str());
 
     Builder->CreateStore(Val, Variable);
     return Val;
   }
-
+  
+  // Rest of the binary operation handling remains the same...
   Value *L = LHS->codegen();
   Value *R = RHS->codegen();
   if (!L || !R)
@@ -156,170 +154,168 @@ Value *BinaryExprAST::codegen()
   Value *Ops[] = {L, R};
   return Builder->CreateCall(F, Ops, "binop");
 }
-Value *WhileExprAST::codegen() {
-    Function *TheFunction = Builder->GetInsertBlock()->getParent();
+Value *WhileExprAST::codegen()
+{
+  Function *TheFunction = Builder->GetInsertBlock()->getParent();
 
-    BasicBlock *CondBB = BasicBlock::Create(*TheContext, "whilecond", TheFunction);
-    BasicBlock *LoopBB = BasicBlock::Create(*TheContext, "whileloop", TheFunction);
-    BasicBlock *AfterBB = BasicBlock::Create(*TheContext, "afterwhile", TheFunction);
+  BasicBlock *CondBB = BasicBlock::Create(*TheContext, "whilecond", TheFunction);
+  BasicBlock *LoopBB = BasicBlock::Create(*TheContext, "whileloop", TheFunction);
+  BasicBlock *AfterBB = BasicBlock::Create(*TheContext, "afterwhile", TheFunction);
 
-    Builder->CreateBr(CondBB);
-    Builder->SetInsertPoint(CondBB);
+  Builder->CreateBr(CondBB);
+  Builder->SetInsertPoint(CondBB);
 
-    Value *CondV = Cond->codegen();
-    if (!CondV)
-        return nullptr;
+  Value *CondV = Cond->codegen();
+  if (!CondV)
+    return nullptr;
 
-    CondV = Builder->CreateFCmpONE(CondV, ConstantFP::get(*TheContext, APFloat(0.0)), "whilecond");
-    Builder->CreateCondBr(CondV, LoopBB, AfterBB);
+  CondV = Builder->CreateFCmpONE(CondV, ConstantFP::get(*TheContext, APFloat(0.0)), "whilecond");
+  Builder->CreateCondBr(CondV, LoopBB, AfterBB);
 
-    Builder->SetInsertPoint(LoopBB);
+  Builder->SetInsertPoint(LoopBB);
 
-    for (auto &Stmt : Body) { // ✅ Iterate over multiple expressions
-        if (!Stmt->codegen())
-            return nullptr;
-    }
+  for (auto &Stmt : Body)
+  { // ✅ Iterate over multiple expressions
+    if (!Stmt->codegen())
+      return nullptr;
+  }
 
-    Builder->CreateBr(CondBB);
+  Builder->CreateBr(CondBB);
 
-    Builder->SetInsertPoint(AfterBB);
-    return Constant::getNullValue(Type::getDoubleTy(*TheContext));
+  Builder->SetInsertPoint(AfterBB);
+  return Constant::getNullValue(Type::getDoubleTy(*TheContext));
 }
-
 
 Function *getPrintfFunction(Module *TheModule, LLVMContext &TheContext)
 {
-    // Check if printf is already declared
-    if (Function *F = TheModule->getFunction("printf"))
-        return F;
+  // Check if printf is already declared
+  if (Function *F = TheModule->getFunction("printf"))
+    return F;
 
-    // Create printf function type: int printf(char*, ...)
-    std::vector<Type *> printfArgs;
-    llvm::PointerType::get(llvm::Type::getInt8Ty(TheContext), 0);
- // Corrected usage
+  // Create printf function type: int printf(char*, ...)
+  std::vector<Type *> printfArgs;
+  llvm::PointerType::get(llvm::Type::getInt8Ty(TheContext), 0);
+  // Corrected usage
 
-    FunctionType *printfType =
-        FunctionType::get(Type::getInt32Ty(TheContext), printfArgs, true);
+  FunctionType *printfType =
+      FunctionType::get(Type::getInt32Ty(TheContext), printfArgs, true);
 
-    Function *printfFunc =
-        Function::Create(printfType, Function::ExternalLinkage, "printf", TheModule);
+  Function *printfFunc =
+      Function::Create(printfType, Function::ExternalLinkage, "printf", TheModule);
 
-    return printfFunc;
+  return printfFunc;
 }
 
 Value *CallExprAST::codegen()
 {
-    
 
-    // Look up the function in the module.
-    Function *CalleeF = getFunction(Callee);
-    if (!CalleeF)
-        return LogErrorV("'basa' iri harina kuwanikwa");
+  // Look up the function in the module.
+  Function *CalleeF = getFunction(Callee);
+  if (!CalleeF)
+    return LogErrorV("'basa' iri harina kuwanikwa");
 
-    if (Callee == "nyora")
+  if (Callee == "nyora")
+  {
+
+    // Ensure `nyora` gets exactly one argument.
+    if (Args.size() != 1)
+      return LogErrorV("nyora expects exactly one argument");
+
+    // Generate code for the argument.
+    Value *Arg = Args[0]->codegen();
+    if (!Arg)
+      return nullptr;
+
+    // Retrieve printf function
+    Function *printfFunc = getPrintfFunction(TheModule.get(), *TheContext);
+    if (!printfFunc)
+      return LogErrorV("Failed to declare printf function");
+
+    // Check if the argument is a double or integer
+    if (Arg->getType()->isDoubleTy())
     {
-        
 
-        // Ensure `nyora` gets exactly one argument.
-        if (Args.size() != 1)
-            return LogErrorV("nyora expects exactly one argument");
-
-        // Generate code for the argument.
-        Value *Arg = Args[0]->codegen();
-        if (!Arg)
-            return nullptr;
-
-        
-
-        // Retrieve printf function
-        Function *printfFunc = getPrintfFunction(TheModule.get(), *TheContext);
-        if (!printfFunc)
-            return LogErrorV("Failed to declare printf function");
-
-        // Check if the argument is a double or integer
-        if (Arg->getType()->isDoubleTy())
-        {
-            
-            Value *formatStr = Builder->CreateGlobalStringPtr("%.5f\n", "fmt"); // 5 decimal places for floats
-            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
-        }
-        else if (Arg->getType()->isIntegerTy())
-        {
-            
-            Value *formatStr = Builder->CreateGlobalStringPtr("%d\n", "fmt"); // Format for integers
-            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
-        }
-        else if (Arg->getType()->isPointerTy())
-        {
-            
-            Value *formatStr = Builder->CreateGlobalStringPtr("%s\n", "fmt"); // Use %s for strings
-            return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
-        }
-        else
-        {
-            return LogErrorV("Unsupported type for nyora");
-        }
+      Value *formatStr = Builder->CreateGlobalStringPtr("%.5f\n", "fmt"); // 5 decimal places for floats
+      return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
     }
-
-    // Handle other function calls.
-    if (CalleeF->arg_size() != Args.size())
-        return LogErrorV("Incorrect # arguments passed");
-
-    std::vector<Value *> ArgsV;
-    for (unsigned i = 0, e = Args.size(); i != e; ++i)
+    else if (Arg->getType()->isIntegerTy())
     {
-        auto ArgV = Args[i]->codegen();
-        if (!ArgV)
-            return nullptr;
-        ArgsV.push_back(ArgV);
+
+      Value *formatStr = Builder->CreateGlobalStringPtr("%d\n", "fmt"); // Format for integers
+      return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
     }
+    else if (Arg->getType()->isPointerTy())
+    {
 
-    Value *Call = Builder->CreateCall(CalleeF, ArgsV, "calltmp");
+      Value *formatStr = Builder->CreateGlobalStringPtr("%s\n", "fmt"); // Use %s for strings
+      return Builder->CreateCall(printfFunc, {formatStr, Arg}, "printfcall");
+    }
+    else
+    {
+      return LogErrorV("Unsupported type for nyora");
+    }
+  }
 
-    // If the function returns void, return nullptr.
-    if (CalleeF->getReturnType()->isVoidTy())
-        return nullptr;
+  // Handle other function calls.
+  if (CalleeF->arg_size() != Args.size())
+    return LogErrorV("Incorrect # arguments passed");
 
-    return Call;
+  std::vector<Value *> ArgsV;
+  for (unsigned i = 0, e = Args.size(); i != e; ++i)
+  {
+    auto ArgV = Args[i]->codegen();
+    if (!ArgV)
+      return nullptr;
+    ArgsV.push_back(ArgV);
+  }
+
+  Value *Call = Builder->CreateCall(CalleeF, ArgsV, "calltmp");
+
+  // If the function returns void, return nullptr.
+  if (CalleeF->getReturnType()->isVoidTy())
+    return nullptr;
+
+  return Call;
 }
 
+Value *IfExprAST::codegen()
+{
+  Value *CondV = Cond->codegen();
+  if (!CondV)
+    return nullptr;
 
-Value *IfExprAST::codegen() {
-    Value *CondV = Cond->codegen();
-    if (!CondV)
-        return nullptr;
+  CondV = Builder->CreateFCmpONE(CondV, ConstantFP::get(*TheContext, APFloat(0.0)), "ifcond");
+  Function *TheFunction = Builder->GetInsertBlock()->getParent();
 
-    CondV = Builder->CreateFCmpONE(CondV, ConstantFP::get(*TheContext, APFloat(0.0)), "ifcond");
-    Function *TheFunction = Builder->GetInsertBlock()->getParent();
+  BasicBlock *ThenBB = BasicBlock::Create(*TheContext, "then", TheFunction);
+  BasicBlock *ElseBB = BasicBlock::Create(*TheContext, "else");
+  BasicBlock *MergeBB = BasicBlock::Create(*TheContext, "ifcont");
 
-    BasicBlock *ThenBB = BasicBlock::Create(*TheContext, "then", TheFunction);
-    BasicBlock *ElseBB = BasicBlock::Create(*TheContext, "else");
-    BasicBlock *MergeBB = BasicBlock::Create(*TheContext, "ifcont");
+  Builder->CreateCondBr(CondV, ThenBB, ElseBB);
 
-    Builder->CreateCondBr(CondV, ThenBB, ElseBB);
+  // Emit 'then' block
+  Builder->SetInsertPoint(ThenBB);
+  for (auto &Stmt : ThenBody)
+  {
+    if (!Stmt->codegen())
+      return nullptr;
+  }
+  Builder->CreateBr(MergeBB);
 
-    // Emit 'then' block
-    Builder->SetInsertPoint(ThenBB);
-    for (auto &Stmt : ThenBody) {
-        if (!Stmt->codegen())
-            return nullptr;
-    }
-    Builder->CreateBr(MergeBB);
+  TheFunction->insert(TheFunction->end(), ElseBB);
+  Builder->SetInsertPoint(ElseBB);
 
-    TheFunction->insert(TheFunction->end(), ElseBB);
-    Builder->SetInsertPoint(ElseBB);
+  for (auto &Stmt : ElseBody)
+  {
+    if (!Stmt->codegen())
+      return nullptr;
+  }
+  Builder->CreateBr(MergeBB);
 
-    for (auto &Stmt : ElseBody) {
-        if (!Stmt->codegen())
-            return nullptr;
-    }
-    Builder->CreateBr(MergeBB);
-
-    TheFunction->insert(TheFunction->end(), MergeBB);
-    Builder->SetInsertPoint(MergeBB);
-    return Constant::getNullValue(Type::getDoubleTy(*TheContext));
+  TheFunction->insert(TheFunction->end(), MergeBB);
+  Builder->SetInsertPoint(MergeBB);
+  return Constant::getNullValue(Type::getDoubleTy(*TheContext));
 }
-
 
 // Output for-loop as:
 //   var = alloca double
@@ -340,7 +336,6 @@ Value *IfExprAST::codegen() {
 //   store nextvar -> var
 //   br endcond, loop, endloop
 // outloop:
-
 
 Value *BlockExprAST::codegen()
 {
@@ -425,7 +420,26 @@ Value *ForExprAST::codegen()
   return ConstantFP::get(*TheContext, APFloat(0.0));
 }
 
-
+Value* VariableExprAST::codegen() {
+  // Debug output - remove after testing
+  //llvm::errs() << "Looking for variable: " << Name << "\n";
+  
+  // 1. Check local variables
+  if (NamedValues.count(Name)) {
+      AllocaInst* V = NamedValues[Name];
+      return Builder->CreateLoad(V->getAllocatedType(), V, Name.c_str());
+  }
+  
+  // 2. Check global variables
+  if (GlobalNamedValues.count(Name)) {
+      GlobalVariable* GV = GlobalNamedValues[Name];
+      return Builder->CreateLoad(GV->getValueType(), GV, Name.c_str());
+  }
+  
+  // 3. Check function arguments (if applicable)
+  
+  return LogErrorV(("Unknown variable name: " + Name).c_str());
+}
 Value *VarExprAST::codegen()
 {
   std::vector<AllocaInst *> OldBindings;
@@ -478,7 +492,32 @@ Value *VarExprAST::codegen()
   // Return the body computation.
   return BodyVal;
 }
+Value* GlobalVarExprAST::codegen() {
+  for (auto& [Name, Init] : VarNames) {
+      // Check for existing global
+      if (TheModule->getNamedGlobal(Name)) {
+          return LogErrorV(("Redefinition of global variable " + Name).c_str());
+      }
 
+      // Get initializer value (default to 0.0 if none)
+      Value* InitVal = Init ? Init->codegen() : 
+          ConstantFP::get(*TheContext, APFloat(0.0));
+      if (!InitVal) return nullptr;
+
+      // Create the global variable
+      auto* GV = new GlobalVariable(
+          *TheModule,
+          InitVal->getType(),
+          false,  // isConstant
+          GlobalValue::ExternalLinkage,
+          dyn_cast<Constant>(InitVal),
+          Name);
+      
+      // Add to global symbol table
+      GlobalNamedValues[Name] = GV;
+  }
+  return Constant::getNullValue(Type::getDoubleTy(*TheContext));
+}
 Function *PrototypeAST::codegen()
 {
   // Make the function type:  double(double,double) etc.
@@ -550,7 +589,7 @@ Function *FunctionAST::codegen()
 // Top-Level parsing and JIT Driver
 //===----------------------------------------------------------------------===//
 
- void InitializeModuleAndManagers()
+void InitializeModuleAndManagers()
 {
   // Open a new context and module.
   TheContext = std::make_unique<LLVMContext>();
@@ -590,7 +629,7 @@ Function *FunctionAST::codegen()
   PB.crossRegisterProxies(*TheLAM, *TheFAM, *TheCGAM, *TheMAM);
 }
 
- void HandleDefinition()
+void HandleDefinition()
 {
   if (auto FnAST = ParseDefinition())
   {
@@ -609,7 +648,7 @@ Function *FunctionAST::codegen()
   }
 }
 
- void HandleExtern()
+void HandleExtern()
 {
   if (auto ProtoAST = ParseExtern())
   {
@@ -628,7 +667,7 @@ Function *FunctionAST::codegen()
   }
 }
 
- void HandleTopLevelExpression()
+void HandleTopLevelExpression()
 {
   // Evaluate a top-level expression into an anonymous function.
   if (auto FnAST = ParseTopLevelExpr())
@@ -662,28 +701,32 @@ Function *FunctionAST::codegen()
     getNextToken();
   }
 }
-
-/// top ::= definition | external | expression | ';'
- void MainLoop()
-{
-  while (true)
-  {
-    switch (CurTok)
-    {
-    case tok_eof:
-      return;
-    case ';': // ignore top-level semicolons.
-      getNextToken();
-      break;
-    case tok_def:
-      HandleDefinition();
-      break;
-    case tok_extern:
-      HandleExtern();
-      break;
-    default:
-      HandleTopLevelExpression();
-      break;
-    }
+void MainLoop() {
+  while (true) {
+      switch (CurTok) {
+      case tok_eof:
+          return;
+      case ';':
+          getNextToken();
+          break;
+      case tok_globalvar: {
+          auto Global = ParseGlobalVarExpr();
+          if (Global) {
+              if (!Global->codegen()) {
+                  LogError("Failed to codegen global variable");
+              }
+          }
+          break;
+      }
+      case tok_def:
+          HandleDefinition();
+          break;
+      case tok_extern:
+          HandleExtern();
+          break;
+      default:
+          HandleTopLevelExpression();
+          break;
+      }
   }
 }

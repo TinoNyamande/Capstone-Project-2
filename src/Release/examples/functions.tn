@@ -1,4 +1,7 @@
+globalvar x = 2 ;
 basa double() {
-   nyora("Hello word")
+   nyora(x+2);
+   nyora("Hello word");
+   nyora("Test");
 }
 double()

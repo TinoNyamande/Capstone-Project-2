@@ -3,8 +3,7 @@
 int CurTok;
 int getNextToken() { return CurTok = gettok(); }
 
-/// BinopPrecedence - This holds the precedence for each binary operator that is
-/// defined.
+
 std::map<char, int> BinopPrecedence;
 
  int GetTokPrecedence()
@@ -294,7 +293,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
  /// varexpr ::= 'var' identifier ('=' expression)?
  //                    (',' identifier ('=' expression)?)* 'in' expression
-  std::unique_ptr<ExprAST> ParseVarExpr()
+ std::unique_ptr<ExprAST> ParseVarExpr()
  {
    getNextToken(); // eat the var.
  
@@ -342,7 +341,36 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    return std::make_unique<VarExprAST>(std::move(VarNames), std::move(Body));
  }
- 
+ std::unique_ptr<ExprAST> ParseGlobalVarExpr() {
+  getNextToken(); // eat globalvar
+  
+  std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> Vars;
+  
+  if (CurTok != tok_identifier)
+      return LogError("expected variable name after 'globalvar'");
+
+  while (true) {
+      std::string Name = IdentifierStr;
+      getNextToken(); // eat identifier
+
+      std::unique_ptr<ExprAST> Init = nullptr;
+      if (CurTok == '=') {
+          getNextToken(); // eat '='
+          Init = ParseExpression();
+          if (!Init) return nullptr;
+      }
+
+      Vars.emplace_back(Name, std::move(Init));
+
+      if (CurTok != ',') break;
+      getNextToken(); // eat ','
+      
+      if (CurTok != tok_identifier)
+          return LogError("expected variable name after comma");
+  }
+
+  return std::make_unique<GlobalVarExprAST>(std::move(Vars));
+}
  /// primary
  ///   ::= identifierexpr
  ///   ::= numberexpr
@@ -354,9 +382,10 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  {
    switch (CurTok)
    {
-   default:
+   default:{
+     std::cout << "Cur Tok " << CurTok << "\n";  
      return LogError("unknown token when expecting an expression");
- 
+   }
    case tok_identifier:
      return ParseIdentifierExpr();
  
@@ -374,6 +403,9 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    case tok_var:
      return ParseVarExpr();
+    
+   case tok_globalvar:
+     return ParseGlobalVarExpr();
  
    case tok_return:
      return ParseReturnExpr();
@@ -559,9 +591,10 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
          if (CurTok == ';') {
              getNextToken();
-         } else if (CurTok != '}') {
-             return LogErrorF("Expected '}' to close function body");
          }
+        //   else if (CurTok != '}') {
+        //      return LogErrorF("Expected '}' to close function body");
+        //  }
      }
  
      if (CurTok != '}')
@@ -573,22 +606,37 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
  
  /// toplevelexpr ::= expression
-  std::unique_ptr<FunctionAST> ParseTopLevelExpr()
- {
-   if (auto E = ParseExpression())
-   {
-     // Make an anonymous proto.
-     auto Proto = std::make_unique<PrototypeAST>("__anon_expr",
-                                                 std::vector<std::string>());
- 
-     // Create a vector and add the expression to it
-     std::vector<std::unique_ptr<ExprAST>> Body;
-     Body.push_back(std::move(E)); // Move the unique_ptr into the vector
- 
-     return std::make_unique<FunctionAST>(std::move(Proto), std::move(Body));
-   }
-   return nullptr;
- }
+ std::unique_ptr<FunctionAST> ParseTopLevelExpr() {
+  // First check for global variables
+  if (CurTok == tok_globalvar) {
+      // Parse the global but don't create a function for it
+      auto Global = ParseGlobalVarExpr();
+      if (!Global) return nullptr;
+      
+      // Immediately generate code for the global variable
+      Global->codegen();
+      
+      // Return an empty function to maintain the expected return type
+      auto Proto = std::make_unique<PrototypeAST>("__global_decl", 
+                                                std::vector<std::string>());
+      return std::make_unique<FunctionAST>(std::move(Proto), 
+                                         std::vector<std::unique_ptr<ExprAST>>());
+  }
+
+  // Original functionality for all other cases
+  if (auto E = ParseExpression()) {
+      // Make an anonymous proto
+      auto Proto = std::make_unique<PrototypeAST>("__anon_expr",
+                                                std::vector<std::string>());
+      
+      // Create a vector and add the expression to it
+      std::vector<std::unique_ptr<ExprAST>> Body;
+      Body.push_back(std::move(E));
+      
+      return std::make_unique<FunctionAST>(std::move(Proto), std::move(Body));
+  }
+  return nullptr;
+}
  
  /// external ::= 'extern' prototype
   std::unique_ptr<PrototypeAST> ParseExtern()

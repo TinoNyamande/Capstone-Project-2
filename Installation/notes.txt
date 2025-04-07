@@ -1,0 +1,7 @@
+1. OOP
+2. While Loop
+3. Variables reprinting
+4. Data structures
+5. Loop over datastructures
+6. String Manipulation
+7. 
