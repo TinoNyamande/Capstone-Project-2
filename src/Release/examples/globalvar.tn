@@ -1,3 +1,4 @@
-globalvar x = 42;
 globalvar y =20-1;
-nyora(y+x);
+globalvar x = 2;
+nyora(y);
+nyora(x);

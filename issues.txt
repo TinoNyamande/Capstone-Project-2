@@ -1,0 +1,6 @@
+1. Variables OOP
+2. Declaring multiple vars
+3. While Loop
+4. Data structures
+5. Math classes
+6. String Manipulation

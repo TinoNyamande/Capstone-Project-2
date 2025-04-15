@@ -675,24 +675,6 @@ void InitializeModuleAndManagers()
   PB.crossRegisterProxies(*TheLAM, *TheFAM, *TheCGAM, *TheMAM);
 }
 
-void HandleDefinition()
-{
-  if (auto FnAST = ParseDefinition())
-  {
-    if (auto *FnIR = FnAST->codegen())
-    {
-
-      ExitOnErr(TheJIT->addModule(
-          ThreadSafeModule(std::move(TheModule), std::move(TheContext))));
-      InitializeModuleAndManagers();
-    }
-  }
-  else
-  {
-    // Skip token for error recovery.
-    getNextToken();
-  }
-}
 
 void HandleExtern()
 {
@@ -713,74 +695,102 @@ void HandleExtern()
   }
 }
 
-void HandleTopLevelExpression()
-{
-  // Evaluate a top-level expression into an anonymous function.
-  if (auto FnAST = ParseTopLevelExpr())
-  {
-    if (FnAST->codegen())
-    {
-      // Create a ResourceTracker to track JIT'd memory allocated to our
-      // anonymous expression -- that way we can free it after executing.
-      auto RT = TheJIT->getMainJITDylib().createResourceTracker();
-
-      auto TSM = ThreadSafeModule(std::move(TheModule), std::move(TheContext));
-      ExitOnErr(TheJIT->addModule(std::move(TSM), RT));
-      InitializeModuleAndManagers();
-
-      // Search the JIT for the __anon_expr symbol.
-      auto ExprSymbol = ExitOnErr(TheJIT->lookup("__anon_expr"));
-
-      // Get the symbol's address and cast it to the right type (takes no
-      // arguments, returns a double) so we can call it as a native function.
-      double (*FP)() = ExprSymbol.getAddress().toPtr<double (*)()>();
-      FP();
-      // fprintf(stderr, "Evaluated to %f\n", FP());
-
-      // Delete the anonymous expression module from the JIT.
-      ExitOnErr(RT->remove());
-    }
-  }
-  else
-  {
-    // Skip token for error recovery.
-    getNextToken();
+void HandleDefinition() {
+  if (auto FnAST = ParseDefinition()) {
+      if (auto *FnIR = FnAST->codegen()) {
+          // Don't add to JIT yet — handled in MainLoop
+      }
+  } else {
+      getNextToken();
   }
 }
+
+
+void HandleTopLevelExpression() {
+  if (auto FnAST = ParseTopLevelExpr()) {
+      if (FnAST->codegen()) {
+
+          // Create a temporary tracker to remove __anon_expr later
+          auto RT = TheJIT->getMainJITDylib().createResourceTracker();
+
+          // Add current module to JIT
+          ExitOnErr(TheJIT->addModule(
+              ThreadSafeModule(std::move(TheModule), std::move(TheContext)), RT
+          ));
+
+          // Lookup and execute
+          auto ExprSymbol = ExitOnErr(TheJIT->lookup("__anon_expr"));
+          double (*FP)() = ExprSymbol.getAddress().toPtr<double (*)()>();
+          FP();
+
+          // Remove __anon_expr after execution
+          ExitOnErr(RT->remove());
+
+          // Prepare fresh module for the next round
+          InitializeModuleAndManagers();
+      }
+  } else {
+      getNextToken();
+  }
+}
+
 void MainLoop() {
+  bool needsModuleAdd = false;
+
   while (true) {
       switch (CurTok) {
-      case tok_eof:
-          return;
-      case ';':
-          getNextToken();
-          break;
-      case tok_globalvar: {
-          auto Global = ParseGlobalVarExpr();
-          if (Global) {
-              if (!Global->codegen()) {
-                  LogError("Failed to codegen global variable");
-              }
+      case tok_eof: {
+          if (needsModuleAdd) {
+              ExitOnErr(TheJIT->addModule(
+                  ThreadSafeModule(std::move(TheModule), std::move(TheContext))
+              ));
+              InitializeModuleAndManagers(); // Prep for next round
+              needsModuleAdd = false;
           }
-          break;
+          return;
       }
+
+      case ';':
+          getNextToken(); // Skip
+          break;
+
       case tok_def:
           HandleDefinition();
+          needsModuleAdd = true;
           break;
-      case tok_class: 
+      case tok_globalvar: {
+            auto Global = ParseGlobalVarExpr();
+            if (Global) {
+                if (!Global->codegen()) {
+                    LogError("Failed to codegen global variable");
+                }
+            }
+            break;
+        }
+
+      case tok_class: {
           getNextToken(); // eat 'class'
           if (auto Class = ParseClass()) {
               if (!Class->codegen()) {
+              } else {
+                  needsModuleAdd = true;
               }
           } else {
               getNextToken();
           }
           break;
-      case tok_extern:
-          HandleExtern();
-          break;
+      }
+
       default:
-          HandleTopLevelExpression();
+          if (needsModuleAdd) {
+              ExitOnErr(TheJIT->addModule(
+                  ThreadSafeModule(std::move(TheModule), std::move(TheContext))
+              ));
+              InitializeModuleAndManagers(); // prep new module after flush
+              needsModuleAdd = false;
+          }
+
+          HandleTopLevelExpression(); // __anon_expr uses the new fresh module
           break;
       }
   }
