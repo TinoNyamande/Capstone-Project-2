@@ -86,7 +86,7 @@ int gettok()
   }
 
   // Handle numbers.
-  if (isdigit(LastChar) || LastChar == '.')
+  if (isdigit(LastChar) )
   {
     std::string NumStr;
     do

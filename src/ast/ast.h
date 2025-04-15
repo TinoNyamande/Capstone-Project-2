@@ -263,10 +263,6 @@ public:
 
   Value *codegen() override;
 };
-
-/// PrototypeAST - This class represents the "prototype" for a function,
-/// which captures its name, and its argument names (thus implicitly the number
-/// of arguments the function takes), as well as if it is an operator.
 class PrototypeAST
 {
   std::string Name;
@@ -281,7 +277,13 @@ public:
         Precedence(Prec) {}
 
   Function *codegen();
+  const std::vector<std::string>& getArgs() const { return Args; }
+  std::vector<std::string> getArgsCopy() const { return Args; }
+  bool isOperator() const { return IsOperator; }
   const std::string &getName() const { return Name; }
+  std::unique_ptr<PrototypeAST> clone() const {
+    return std::make_unique<PrototypeAST>(Name, Args, IsOperator, Precedence);
+}
 
   bool isUnaryOp() const { return IsOperator && Args.size() == 1; }
   bool isBinaryOp() const { return IsOperator && Args.size() == 2; }
@@ -295,18 +297,36 @@ public:
   unsigned getBinaryPrecedence() const { return Precedence; }
 };
 
-/// FunctionAST - This class represents a function definition itself.
-class FunctionAST
-{
+
+
+class FunctionAST {
   std::unique_ptr<PrototypeAST> Proto;
   std::vector<std::unique_ptr<ExprAST>> Body;
+  std::string FullName; // Stores Class.Method if this is a method
 
 public:
   FunctionAST(std::unique_ptr<PrototypeAST> Proto,
-              std::vector<std::unique_ptr<ExprAST>> Body)
-      : Proto(std::move(Proto)), Body(std::move(Body)) {}
+              std::vector<std::unique_ptr<ExprAST>> Body,
+              const std::string &fullName = "")
+      : Proto(std::move(Proto)), Body(std::move(Body)), FullName(fullName) {}
 
-  Function *codegen(); // ✅ Declare codegen() method
+      PrototypeAST* getProto() const { return Proto.get(); }
+      std::vector<std::unique_ptr<ExprAST>>& getBody() { return Body; }
+      const std::string& getName() const { return FullName; }
+
+  Function *codegen() ;
+};
+
+
+class ClassAST {
+  std::string Name;
+  std::vector<std::unique_ptr<FunctionAST>> Methods;
+
+public:
+  ClassAST(std::string name, std::vector<std::unique_ptr<FunctionAST>> methods)
+      : Name(std::move(name)), Methods(std::move(methods)) {}
+
+      Value *ClassAST::codegen();
 };
 
 #endif

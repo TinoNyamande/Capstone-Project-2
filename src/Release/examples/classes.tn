@@ -1,0 +1,11 @@
+class Animal {
+    basa speak() {
+        nyora("I am an animal");
+    }
+    basa test() {
+        nyora("hello world");
+    }
+}
+
+Animal.speak();
+Animal.test();

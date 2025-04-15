@@ -518,6 +518,97 @@ Value* GlobalVarExprAST::codegen() {
   }
   return Constant::getNullValue(Type::getDoubleTy(*TheContext));
 }
+
+
+Function *FunctionAST::codegen() {
+  std::string FuncName = FullName.empty() ? Proto->getName() : FullName;
+  
+  // Create function prototype in the Module's symbol table
+  FunctionProtos[FuncName] = std::make_unique<PrototypeAST>(
+      FuncName,
+      Proto->getArgs(),
+      Proto->isOperator(),
+      Proto->getBinaryPrecedence()
+  );
+  
+  
+  
+  Function *TheFunction = getFunction(FuncName);
+  if (!TheFunction) {
+      return nullptr;
+  }
+  
+  BasicBlock *BB = BasicBlock::Create(*TheContext, "entry", TheFunction);
+  Builder->SetInsertPoint(BB);
+  
+  // Record function arguments
+  NamedValues.clear();
+  for (auto &Arg : TheFunction->args()) {
+      AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName());
+      Builder->CreateStore(&Arg, Alloca);
+      NamedValues[std::string(Arg.getName())] = Alloca;
+  }
+  
+  // Generate code for each expression
+  Value *RetVal = nullptr;
+  for (size_t i = 0; i < Body.size(); ++i) {
+      RetVal = Body[i]->codegen();
+      if (!RetVal) {
+          return nullptr;
+      }
+      
+      if (i == Body.size() - 1) {
+          Builder->CreateRet(RetVal);
+      }
+  }
+  
+  verifyFunction(*TheFunction);
+  
+  TheFPM->run(*TheFunction, *TheFAM);
+  
+  return TheFunction;
+}
+
+
+Value *ClassAST::codegen() {
+  
+  for (auto &Method : Methods) {
+      PrototypeAST* OriginalProto = Method->getProto();
+      std::string MethodName = OriginalProto->getName();
+      std::string FullName = Name + "." + MethodName;
+      
+      
+      // Create and register the prototype first
+      auto NewProto = std::make_unique<PrototypeAST>(
+          FullName,
+          OriginalProto->getArgs(),
+          OriginalProto->isOperator(),
+          OriginalProto->getBinaryPrecedence()
+      );
+      
+      // Register the prototype before generating the function
+      FunctionProtos[FullName] = std::move(NewProto);
+      
+      // Generate the function body
+      std::vector<std::unique_ptr<ExprAST>> Body;
+      for (auto &Expr : Method->getBody()) {
+          Body.push_back(std::move(Expr));
+      }
+      
+      auto NewFunction = std::make_unique<FunctionAST>(
+          FunctionProtos[FullName]->clone(), // Use a clone of the registered prototype
+          std::move(Body),
+          FullName
+      );
+      
+      if (!NewFunction->codegen()) {
+          return LogErrorV(("Failed to generate method " + FullName).c_str());
+      }
+  }
+  
+  return Constant::getNullValue(Type::getInt32Ty(*TheContext));
+}
+
 Function *PrototypeAST::codegen()
 {
   // Make the function type:  double(double,double) etc.
@@ -536,54 +627,9 @@ Function *PrototypeAST::codegen()
   return F;
 }
 
-Function *FunctionAST::codegen()
-{
-  auto &P = *Proto;
-  FunctionProtos[Proto->getName()] = std::move(Proto);
-  Function *TheFunction = getFunction(P.getName());
-  if (!TheFunction)
-    return nullptr;
 
-  // If this is an operator, install it.
-  if (P.isBinaryOp())
-    BinopPrecedence[P.getOperatorName()] = P.getBinaryPrecedence();
 
-  // Create a new basic block to start insertion into.
-  BasicBlock *BB = BasicBlock::Create(*TheContext, "entry", TheFunction);
-  Builder->SetInsertPoint(BB);
 
-  // Record the function arguments in the NamedValues map.
-  NamedValues.clear();
-  for (auto &Arg : TheFunction->args())
-  {
-    AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName());
-    Builder->CreateStore(&Arg, Alloca);
-    NamedValues[std::string(Arg.getName())] = Alloca;
-  }
-
-  // Generate IR for each expression in the body
-  Value *RetVal = nullptr;
-  for (size_t i = 0; i < Body.size(); ++i)
-  {
-    RetVal = Body[i]->codegen();
-    if (!RetVal)
-      return nullptr; // Stop on error
-
-    // Only the last expression produces a return value
-    if (i == Body.size() - 1)
-    {
-      Builder->CreateRet(RetVal);
-    }
-  }
-
-  // Validate the generated code, checking for consistency.
-  verifyFunction(*TheFunction);
-
-  // Run the optimizer on the function.
-  TheFPM->run(*TheFunction, *TheFAM);
-
-  return TheFunction;
-}
 
 //===----------------------------------------------------------------------===//
 // Top-Level parsing and JIT Driver
@@ -720,6 +766,15 @@ void MainLoop() {
       }
       case tok_def:
           HandleDefinition();
+          break;
+      case tok_class: 
+          getNextToken(); // eat 'class'
+          if (auto Class = ParseClass()) {
+              if (!Class->codegen()) {
+              }
+          } else {
+              getNextToken();
+          }
           break;
       case tok_extern:
           HandleExtern();

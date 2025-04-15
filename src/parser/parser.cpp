@@ -25,6 +25,12 @@ std::unique_ptr<ExprAST> LogError(const char *Str)
   return nullptr;
 }
 
+std::unique_ptr<ClassAST> LogErrorC(const char *Str)
+{
+  fprintf(stderr, "Error: %s\n", Str);
+  return nullptr;
+}
+
 std::unique_ptr<PrototypeAST> LogErrorP(const char *Str)
 {
   LogError(Str);
@@ -104,45 +110,67 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
    return V;
  }
  
- /// identifierexpr
- ///   ::= identifier
- ///   ::= identifier '(' expression* ')'
-  std::unique_ptr<ExprAST> ParseIdentifierExpr()
- {
-   std::string IdName = IdentifierStr;
+ 
+ std::unique_ptr<ExprAST> ParseIdentifierExpr() {
+  std::string IdName = IdentifierStr;
+  getNextToken();
+  if (CurTok != '(' && CurTok != '.') {
+    return std::make_unique<VariableExprAST>(IdName);
+  }
 
+  
+  if (CurTok == '.') {
+      getNextToken(); // eat '.'
+      if (CurTok != tok_identifier)
+          return LogError("Expected method name after '.'");
+      std::string MethodName = IdentifierStr;
+      getNextToken();
+      
+      if (CurTok != '(')
+          return LogError("Expected '(' after method name");
+      getNextToken(); // eat '('
+      
+      std::vector<std::unique_ptr<ExprAST>> Args;
+      if (CurTok != ')') {
+          while (true) {
+              if (auto Arg = ParseExpression())
+                  Args.push_back(std::move(Arg));
+              else
+                  return nullptr;
+              
+              if (CurTok == ')') break;
+              if (CurTok != ',')
+                  return LogError("Expected ')' or ',' in argument list");
+              getNextToken();
+          }
+      }
+      getNextToken(); // eat ')'
+      
+      std::string FullName = IdName + "." + MethodName;
+      return std::make_unique<CallExprAST>(FullName, std::move(Args));
+  }
+  
+  ;
+  getNextToken(); // eat '('
+  std::vector<std::unique_ptr<ExprAST>> Args;
+  if (CurTok != ')') {
+      while (true) {
+          if (auto Arg = ParseExpression())
+              Args.push_back(std::move(Arg));
+          else
+              return nullptr;
+          
+          if (CurTok == ')') break;
+          if (CurTok != ',')
+              return LogError("Expected ')' or ',' in argument list");
+          getNextToken();
+      }
+  }
+  getNextToken(); // eat ')'
+  
+  return std::make_unique<CallExprAST>(IdName, std::move(Args));
+}
  
-   getNextToken(); // eat identifier.
- 
-   if (CurTok != '(') // Simple variable ref.
-     return std::make_unique<VariableExprAST>(IdName);
- 
-   // Call.
-   getNextToken(); // eat (
-   std::vector<std::unique_ptr<ExprAST>> Args;
-   if (CurTok != ')')
-   {
-     while (true)
-     {
-       if (auto Arg = ParseExpression())
-         Args.push_back(std::move(Arg));
-       else
-         return nullptr;
- 
-       if (CurTok == ')')
-         break;
- 
-       if (CurTok != ',')
-          return LogError("Panotarisirwa')' kana ',' mune rondedzero ye argument");
-       getNextToken();
-     }
-   }
- 
-   // Eat the ')'.
-   getNextToken();
- 
-   return std::make_unique<CallExprAST>(IdName, std::move(Args));
- }
  
  /// ifexpr ::= 'if' expression 'then' expression 'else' expression
  /// ifexpr ::= 'if' '(' expression ')' '{' expression '}' ('else' '{' expression '}')?
@@ -479,6 +507,42 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          std::make_unique<BinaryExprAST>(BinOp, std::move(LHS), std::move(RHS));
    }
  }
+
+ std::unique_ptr<ClassAST> ParseClass() {  
+  if (CurTok != tok_identifier) {
+      return LogErrorC("Expected class name after 'class'");
+  }
+  
+  std::string ClassName = IdentifierStr;
+  getNextToken(); // eat class name
+
+  if (CurTok != '{') {
+      return LogErrorC("Expected '{' after class name");
+  }
+  getNextToken(); // eat '{'
+
+  std::vector<std::unique_ptr<FunctionAST>> Methods;
+
+  while (CurTok != '}' && CurTok != tok_eof) {
+      if (CurTok == tok_def) {
+          if (auto Fn = ParseDefinition()) {
+              Methods.push_back(std::move(Fn));
+          } else {
+              return nullptr;
+          }
+      } else {
+          return LogErrorC("Expected method definition in class");
+      }
+  }
+
+  if (CurTok != '}') {
+      return LogErrorC("Expected '}' at end of class");
+  }
+  getNextToken(); // eat '}'
+
+  return std::make_unique<ClassAST>(ClassName, std::move(Methods));
+}
+
  
  /// expression
  ///   ::= unary binoprhs
