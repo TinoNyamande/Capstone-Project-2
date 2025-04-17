@@ -1,11 +1,19 @@
-class Animal {
-    basa speak() {
-        nyora("I am an animal");
-    }
-    basa test() {
-        nyora("hello world");
+globalvar p = 15;
+globalvar y= 20;
+globalvar x = 25;
+
+nyora(p);
+nyora(y);
+nyora(x);
+nyora("Hello world");
+
+class Test {
+    globalvar ctest = 103;
+    basa grret() {
+        nyora("Hello world 2");
     }
 }
 
-Animal.speak();
-Animal.test();
+
+Test.grret();
+nyora(Test.ctest);

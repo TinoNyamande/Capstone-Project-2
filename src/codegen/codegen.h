@@ -1,11 +1,12 @@
 // Codegen.h
 #ifndef CODEGEN_H
 #define CODEGEN_H
-
+#include "llvm/Transforms/Utils/Cloning.h"
 #include "Codegen.h"
 #include "../lexer/lexer.h"
 #include "../ast/ast.h"
 #include "../parser/parser.h"
+#include "llvm/Support/raw_ostream.h"
 
 extern std::unique_ptr<LLVMContext> TheContext;
 extern std::unique_ptr<Module> TheModule;

@@ -15,7 +15,10 @@ std::unique_ptr<StandardInstrumentations> TheSI;
 std::map<std::string, std::unique_ptr<PrototypeAST>> FunctionProtos;
 ExitOnError ExitOnErr;
 static std::map<std::string, GlobalVariable*> GlobalNamedValues;
+static bool ModuleInitialized = false;
+static std::mutex global_var_mutex;
 
+#define DEBUG_LOG(msg) std::cerr << "[DEBUG] " << msg << "\n"
 
 Value *LogErrorV(const char *Str)
 {
@@ -419,26 +422,26 @@ Value *ForExprAST::codegen()
   // Return 0.0 (per Kaleidoscope convention)
   return ConstantFP::get(*TheContext, APFloat(0.0));
 }
-
 Value* VariableExprAST::codegen() {
-  // Debug output - remove after testing
-  //llvm::errs() << "Looking for variable: " << Name << "\n";
   
-  // 1. Check local variables
-  if (NamedValues.count(Name)) {
-      AllocaInst* V = NamedValues[Name];
-      return Builder->CreateLoad(V->getAllocatedType(), V, Name.c_str());
-  }
-  
-  // 2. Check global variables
-  if (GlobalNamedValues.count(Name)) {
+  // First check global variables
+  {
+    std::lock_guard<std::mutex> lock(global_var_mutex);
+    if (GlobalNamedValues.count(Name)) {
       GlobalVariable* GV = GlobalNamedValues[Name];
+      if (!GV) {
+        return LogErrorV("Null global variable");
+      }
       return Builder->CreateLoad(GV->getValueType(), GV, Name.c_str());
+    }
   }
   
-  // 3. Check function arguments (if applicable)
+  // Then check local variables
+  AllocaInst* A = NamedValues[Name];
+  if (!A)
+    return LogErrorV("Unknown variable name");
   
-  return LogErrorV(("Unknown variable name: " + Name).c_str());
+  return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
 }
 Value *VarExprAST::codegen()
 {
@@ -492,122 +495,174 @@ Value *VarExprAST::codegen()
   // Return the body computation.
   return BodyVal;
 }
-Value* GlobalVarExprAST::codegen() {
-  for (auto& [Name, Init] : VarNames) {
-      // Check for existing global
-      if (TheModule->getNamedGlobal(Name)) {
-          return LogErrorV(("Redefinition of global variable " + Name).c_str());
-      }
 
-      // Get initializer value (default to 0.0 if none)
-      Value* InitVal = Init ? Init->codegen() : 
-          ConstantFP::get(*TheContext, APFloat(0.0));
-      if (!InitVal) return nullptr;
 
-      // Create the global variable
-      auto* GV = new GlobalVariable(
-          *TheModule,
-          InitVal->getType(),
-          false,  // isConstant
-          GlobalValue::ExternalLinkage,
-          dyn_cast<Constant>(InitVal),
-          Name);
-      
-      // Add to global symbol table
-      GlobalNamedValues[Name] = GV;
+std::string LLVMTypeToString(llvm::Type* type) {
+  std::string str;
+  llvm::raw_string_ostream rso(str);
+  type->print(rso);
+  return rso.str();
+}
+
+std::string LLVMValueToString(llvm::Value* val) {
+  std::string str;
+  llvm::raw_string_ostream rso(str);
+  val->print(rso);
+  return rso.str();
+}
+ 
+void DumpGlobalVariables() {
+  DEBUG_LOG("=== GLOBAL VARIABLE DUMP (" << GlobalNamedValues.size() << ") ===");
+  for (const auto& [name, gv] : GlobalNamedValues) {
+    DEBUG_LOG("'" << name << "'");
+    DEBUG_LOG("  Address: " << (void*)gv);
+    if (!gv) {
+      DEBUG_LOG("  WARNING: NULL GLOBAL VARIABLE!");
+      continue;
+    }
+    DEBUG_LOG("  Type: " + LLVMTypeToString(gv->getValueType()));
+    DEBUG_LOG("  Initializer: " << (void*)gv->getInitializer());
+    if (gv->hasInitializer()) {
+      DEBUG_LOG("  Init Value: " + LLVMValueToString(gv->getInitializer()));
+    }
+    DEBUG_LOG("  IsConstant: " << gv->isConstant());
+    DEBUG_LOG("  Linkage: " << gv->getLinkage());
   }
+  DEBUG_LOG("=== END DUMP ===");
+}
+Value* GlobalVarExprAST::codegen() {
+  
+  for (auto& [Name, Init] : VarNames) {
+    
+    if (TheModule->getNamedGlobal(Name)) {
+
+      return LogErrorV(("Redefinition of global variable " + Name).c_str());
+    }
+    if (GlobalNamedValues.count(Name)) {
+        
+      return LogErrorV(("Internal error with global variable " + Name).c_str());
+    }
+
+    Value* InitVal = nullptr;
+    if (Init) {
+      InitVal = Init->codegen();
+      if (!InitVal) {
+        return nullptr;
+      }
+    } else {
+      InitVal = ConstantFP::get(*TheContext, APFloat(0.0));
+    }
+
+    auto* ConstInit = dyn_cast<Constant>(InitVal);
+    if (!ConstInit) {
+
+      return LogErrorV(("Initializer for " + Name + " must be constant").c_str());
+    }
+
+    auto* GV = new GlobalVariable(
+      *TheModule,
+      InitVal->getType(),
+      false,
+      GlobalValue::ExternalLinkage,
+      ConstInit,
+      Name
+    );
+
+    GlobalNamedValues[Name] = GV;
+  }
+
+ 
   return Constant::getNullValue(Type::getDoubleTy(*TheContext));
 }
 
+Function* FunctionAST::codegen(const std::string& FuncNameOverride) {
+  std::string FuncName = FuncNameOverride.empty() ? getName() : FuncNameOverride;
 
-Function *FunctionAST::codegen() {
-  std::string FuncName = FullName.empty() ? Proto->getName() : FullName;
-  
-  // Create function prototype in the Module's symbol table
-  FunctionProtos[FuncName] = std::make_unique<PrototypeAST>(
+  // Get the function type from the prototype (or build it)
+  FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), false);
+
+  // Create the function with the resolved name
+  Function *TheFunction = Function::Create(
+      FT,
+      Function::ExternalLinkage,
       FuncName,
-      Proto->getArgs(),
-      Proto->isOperator(),
-      Proto->getBinaryPrecedence()
+      TheModule.get()
   );
-  
-  
-  
-  Function *TheFunction = getFunction(FuncName);
-  if (!TheFunction) {
-      return nullptr;
-  }
-  
+
+  // Create a new basic block to start insertion into
   BasicBlock *BB = BasicBlock::Create(*TheContext, "entry", TheFunction);
   Builder->SetInsertPoint(BB);
-  
-  // Record function arguments
-  NamedValues.clear();
-  for (auto &Arg : TheFunction->args()) {
-      AllocaInst *Alloca = CreateEntryBlockAlloca(TheFunction, Arg.getName());
-      Builder->CreateStore(&Arg, Alloca);
-      NamedValues[std::string(Arg.getName())] = Alloca;
+
+  // Generate the body
+  for (auto &Expr : Body) {
+    if (!Expr->codegen()) {
+      TheFunction->eraseFromParent(); // cleanup
+      return nullptr;
+    }
   }
-  
-  // Generate code for each expression
-  Value *RetVal = nullptr;
-  for (size_t i = 0; i < Body.size(); ++i) {
-      RetVal = Body[i]->codegen();
-      if (!RetVal) {
-          return nullptr;
-      }
-      
-      if (i == Body.size() - 1) {
-          Builder->CreateRet(RetVal);
-      }
-  }
-  
+
+  // Return 0.0 by default if the body has no return (optional)
+  Builder->CreateRet(ConstantFP::get(*TheContext, APFloat(0.0)));
+
+  // Verify the function
   verifyFunction(*TheFunction);
-  
-  TheFPM->run(*TheFunction, *TheFAM);
-  
+
   return TheFunction;
 }
 
 
 Value *ClassAST::codegen() {
-  
+
+  // Handle Methods
   for (auto &Method : Methods) {
-      PrototypeAST* OriginalProto = Method->getProto();
-      std::string MethodName = OriginalProto->getName();
-      std::string FullName = Name + "." + MethodName;
-      
-      
-      // Create and register the prototype first
-      auto NewProto = std::make_unique<PrototypeAST>(
-          FullName,
-          OriginalProto->getArgs(),
-          OriginalProto->isOperator(),
-          OriginalProto->getBinaryPrecedence()
-      );
-      
-      // Register the prototype before generating the function
-      FunctionProtos[FullName] = std::move(NewProto);
-      
-      // Generate the function body
-      std::vector<std::unique_ptr<ExprAST>> Body;
-      for (auto &Expr : Method->getBody()) {
-          Body.push_back(std::move(Expr));
-      }
-      
-      auto NewFunction = std::make_unique<FunctionAST>(
-          FunctionProtos[FullName]->clone(), // Use a clone of the registered prototype
-          std::move(Body),
-          FullName
-      );
-      
-      if (!NewFunction->codegen()) {
-          return LogErrorV(("Failed to generate method " + FullName).c_str());
-      }
+    PrototypeAST* OriginalProto = Method->getProto();
+    std::string MethodName = OriginalProto->getName();
+    std::string FullName = Name + "." + MethodName;
+
+
+    auto NewProto = std::make_unique<PrototypeAST>(
+        FullName,
+        OriginalProto->getArgs(),
+        OriginalProto->isOperator(),
+        OriginalProto->getBinaryPrecedence()
+    );
+
+    FunctionProtos[FullName] = std::move(NewProto);
+
+    // Move method body
+    std::vector<std::unique_ptr<ExprAST>> Body;
+    for (auto &Expr : Method->getBody()) {
+      Body.push_back(std::move(Expr));
+    }
+
+    auto NewFunction = std::make_unique<FunctionAST>(
+        FunctionProtos[FullName]->clone(),
+        std::move(Body),
+        FullName
+    );
+
+    if (!NewFunction->codegen()) {
+      return LogErrorV(("Failed to generate method " + FullName).c_str());
+    }
   }
-  
+
+  // Handle Members
+  std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> QualifiedMembers;
+
+  for (auto &Member : Members) {
+    std::string FullVarName = Name + "." + Member.first;
+    QualifiedMembers.emplace_back(FullVarName, std::move(Member.second));
+  }
+
+  auto GlobalVars = std::make_unique<GlobalVarExprAST>(std::move(QualifiedMembers));
+
+  if (!GlobalVars->codegen()) {
+    return LogErrorV(("Failed to generate class member variables for " + Name).c_str());
+  }
+
   return Constant::getNullValue(Type::getInt32Ty(*TheContext));
 }
+
 
 Function *PrototypeAST::codegen()
 {
@@ -706,92 +761,149 @@ void HandleDefinition() {
 }
 
 
-void HandleTopLevelExpression() {
-  if (auto FnAST = ParseTopLevelExpr()) {
-      if (FnAST->codegen()) {
+std::unique_ptr<Module> CloneModule(Module& M, LLVMContext& Context) {
+  auto NewModule = std::make_unique<Module>("jit_module", Context);
+  NewModule->setDataLayout(M.getDataLayout());
+  
+  // Value mapping for cloning
+  ValueToValueMapTy VMap;
+  
+  // Clone all global variables
+  for (auto& Global : M.globals()) {
+    auto* NewGlobal = new GlobalVariable(
+        *NewModule,
+        Global.getValueType(),
+        Global.isConstant(),
+        Global.getLinkage(),
+        nullptr, // Initializer handled below
+        Global.getName()
+    );
+    NewGlobal->copyAttributesFrom(&Global);
+    VMap[&Global] = NewGlobal;
+  }
+  
+  // Clone initializers
+  for (auto& Global : M.globals()) {
+    if (Global.hasInitializer()) {
+      auto* NewGlobal = cast<GlobalVariable>(VMap[&Global]);
+      NewGlobal->setInitializer(MapValue(Global.getInitializer(), VMap));
+    }
+  }
+  
+// Clone function declarations
+for (Function &F : M.functions()) {
+  Function *NewF = Function::Create(
+      cast<FunctionType>(F.getFunctionType()),
+      F.getLinkage(),
+      F.getName(),
+      NewModule.get()
+  );
+  NewF->copyAttributesFrom(&F);
+  VMap[&F] = NewF;
+}
 
-          // Create a temporary tracker to remove __anon_expr later
-          auto RT = TheJIT->getMainJITDylib().createResourceTracker();
-
-          // Add current module to JIT
-          ExitOnErr(TheJIT->addModule(
-              ThreadSafeModule(std::move(TheModule), std::move(TheContext)), RT
-          ));
-
-          // Lookup and execute
-          auto ExprSymbol = ExitOnErr(TheJIT->lookup("__anon_expr"));
-          double (*FP)() = ExprSymbol.getAddress().toPtr<double (*)()>();
-          FP();
-
-          // Remove __anon_expr after execution
-          ExitOnErr(RT->remove());
-
-          // Prepare fresh module for the next round
-          InitializeModuleAndManagers();
-      }
-  } else {
-      getNextToken();
+// Clone function bodies
+for (Function &F : M.functions()) {
+  if (!F.isDeclaration()) {
+    Function *NewF = cast<Function>(VMap[&F]);
+    SmallVector<ReturnInst*, 8> Returns;
+    CloneFunctionInto(NewF, &F, VMap, CloneFunctionChangeType::DifferentModule, Returns);
   }
 }
+
+  
+  return NewModule;
+}
+void HandleTopLevelExpression() {
+  static int AnonCount = 0;
+  std::string FuncName = "__anon_expr" + std::to_string(AnonCount++);
+
+  if (auto FnAST = ParseTopLevelExpr()) {
+    // Pass the function name override
+    if (FnAST->codegen(FuncName)) {
+
+      // Create resource tracker
+      auto RT = TheJIT->getMainJITDylib().createResourceTracker();
+
+      // Use a temporary context for cloning
+      auto TmpContext = std::make_unique<LLVMContext>();
+      auto ClonedModule = CloneModule(*TheModule, *TmpContext);
+
+      // Create the ThreadSafeModule
+      orc::ThreadSafeModule TSM(std::move(ClonedModule), std::move(TmpContext));
+
+      // Add to JIT
+      ExitOnErr(TheJIT->addModule(std::move(TSM), RT));
+
+      // Lookup and execute the unique function
+      auto ExprSymbol = ExitOnErr(TheJIT->lookup(FuncName));
+      auto FP = ExprSymbol.getAddress().toPtr<double (*)()>();
+      FP();
+
+      // Clean up
+      ExitOnErr(RT->remove());
+    }
+  } else {
+    getNextToken(); // Skip on error
+  }
+}
+
 
 void MainLoop() {
   bool needsModuleAdd = false;
 
   while (true) {
       switch (CurTok) {
-      case tok_eof: {
-          if (needsModuleAdd) {
-              ExitOnErr(TheJIT->addModule(
-                  ThreadSafeModule(std::move(TheModule), std::move(TheContext))
-              ));
-              InitializeModuleAndManagers(); // Prep for next round
-              needsModuleAdd = false;
+          case tok_eof: {
+              if (needsModuleAdd) {
+
+                  ExitOnErr(TheJIT->addModule(
+                      ThreadSafeModule(std::move(TheModule), std::move(TheContext))
+                  ));
+                  InitializeModuleAndManagers(); // Prep for possible future input
+                  needsModuleAdd = false;
+              }
+              return;
           }
-          return;
-      }
 
-      case ';':
-          getNextToken(); // Skip
-          break;
-
-      case tok_def:
-          HandleDefinition();
-          needsModuleAdd = true;
-          break;
-      case tok_globalvar: {
+          case tok_globalvar: {
             auto Global = ParseGlobalVarExpr();
-            if (Global) {
-                if (!Global->codegen()) {
-                    LogError("Failed to codegen global variable");
-                }
+            if (Global && Global->codegen()) {
+                // Keep the module with globals alive
+                needsModuleAdd = true;
+            } else {
+                LogError("Failed to codegen global variable");
             }
             break;
         }
+        
 
-      case tok_class: {
-          getNextToken(); // eat 'class'
-          if (auto Class = ParseClass()) {
-              if (!Class->codegen()) {
+          case ';':
+              getNextToken(); // Skip empty statement
+              break;
+
+          case tok_def:
+              HandleDefinition();
+              needsModuleAdd = true;
+              break;
+
+          case tok_class: {
+              getNextToken(); // eat 'class'
+              if (auto Class = ParseClass()) {
+                  if (!Class->codegen()) {
+                  } else {
+                      needsModuleAdd = true;
+                  }
               } else {
-                  needsModuleAdd = true;
+                  getNextToken(); // Skip token to avoid infinite loop
               }
-          } else {
-              getNextToken();
-          }
-          break;
-      }
-
-      default:
-          if (needsModuleAdd) {
-              ExitOnErr(TheJIT->addModule(
-                  ThreadSafeModule(std::move(TheModule), std::move(TheContext))
-              ));
-              InitializeModuleAndManagers(); // prep new module after flush
-              needsModuleAdd = false;
+              break;
           }
 
-          HandleTopLevelExpression(); // __anon_expr uses the new fresh module
-          break;
+          default:
+              // ✅ Don't reinitialize the module!
+              HandleTopLevelExpression();
+              break;
       }
   }
 }

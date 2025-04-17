@@ -310,23 +310,32 @@ public:
               const std::string &fullName = "")
       : Proto(std::move(Proto)), Body(std::move(Body)), FullName(fullName) {}
 
-      PrototypeAST* getProto() const { return Proto.get(); }
-      std::vector<std::unique_ptr<ExprAST>>& getBody() { return Body; }
-      const std::string& getName() const { return FullName; }
+  PrototypeAST* getProto() const { return Proto.get(); }
+  std::vector<std::unique_ptr<ExprAST>>& getBody() { return Body; }
+  const std::string& getName() const { return FullName; }
 
-  Function *codegen() ;
+  Function *codegen(const std::string& FuncNameOverride = "");
 };
 
 
 class ClassAST {
   std::string Name;
   std::vector<std::unique_ptr<FunctionAST>> Methods;
+  std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> Members;
 
 public:
-  ClassAST(std::string name, std::vector<std::unique_ptr<FunctionAST>> methods)
-      : Name(std::move(name)), Methods(std::move(methods)) {}
+  ClassAST(std::string name,
+           std::vector<std::unique_ptr<FunctionAST>> methods,
+           std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> members)
+      : Name(std::move(name)), Methods(std::move(methods)), Members(std::move(members)) {}
 
-      Value *ClassAST::codegen();
+  Value *codegen();
+  ExprAST *getMember(const std::string &name) const {
+      for (const auto &m : Members) {
+          if (m.first == name) return m.second.get();
+      }
+      return nullptr;
+  }
 };
 
 #endif
