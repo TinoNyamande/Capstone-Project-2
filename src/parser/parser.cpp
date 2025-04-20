@@ -669,6 +669,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  /// definition ::= 'def' prototype expression
   std::unique_ptr<FunctionAST> ParseDefinition() {
      getNextToken(); // Eat 'def'
+     std::string FnName = IdentifierStr;
      auto Proto = ParsePrototype();
      if (!Proto)
          return nullptr;
@@ -698,7 +699,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          return LogErrorF("Expected '}' to close function body");
      getNextToken(); // Eat '}'
  
-     return std::make_unique<FunctionAST>(std::move(Proto), std::move(BodyExpressions));
+     return std::make_unique<FunctionAST>(std::move(Proto), std::move(BodyExpressions),FnName);
  }
  
  

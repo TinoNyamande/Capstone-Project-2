@@ -17,3 +17,9 @@ class Test {
 
 Test.grret();
 nyora(Test.ctest);
+
+basa sp() {
+    nyora("Hello world 3");
+}
+
+sp();
