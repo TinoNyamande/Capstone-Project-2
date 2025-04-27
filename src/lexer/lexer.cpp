@@ -60,9 +60,9 @@ int gettok()
       return tok_binary;
     if (IdentifierStr == "unary")
       return tok_unary;
+    // if (IdentifierStr == "zita")
+    //   return tok_var;
     if (IdentifierStr == "zita")
-      return tok_var;
-    if (IdentifierStr == "globalvar")
       return tok_globalvar;
     if (IdentifierStr == "dzosa")
       return tok_return;
@@ -70,7 +70,7 @@ int gettok()
       return tok_while;
     if (IdentifierStr == "ita")
       return tok_do;
-    if (IdentifierStr == "class") 
+    if (IdentifierStr == "kirasi") 
       return tok_class;
     if (IdentifierStr == "new") 
       return tok_new;

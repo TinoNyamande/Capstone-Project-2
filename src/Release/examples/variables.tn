@@ -1,4 +1,4 @@
 
-zita x = 30.0 mu 
+zita x = 30.0 ;
 nyora(x);
 

@@ -215,7 +215,7 @@ Value *CallExprAST::codegen()
   // Look up the function in the module.
   Function *CalleeF = getFunction(Callee);
   if (!CalleeF)
-    return LogErrorV("'basa' iri harina kuwanikwa");
+    return LogErrorV(("'basa' iri harina kuwanikwa : "+Callee).c_str());
 
   if (Callee == "nyora")
   {
@@ -439,7 +439,7 @@ Value* VariableExprAST::codegen() {
   // Then check local variables
   AllocaInst* A = NamedValues[Name];
   if (!A)
-    return LogErrorV("Unknown variable name");
+    return LogErrorV(("Unknown variable name: "+Name).c_str());
   
   return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
 }
@@ -582,6 +582,7 @@ Function* FunctionAST::codegen(const std::string& FuncNameOverride) {
   FunctionType *FT = FunctionType::get(Type::getDoubleTy(*TheContext), false);
 
   // Create the function with the resolved name
+
   Function *TheFunction = Function::Create(
       FT,
       Function::ExternalLinkage,

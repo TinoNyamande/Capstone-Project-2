@@ -1,14 +1,14 @@
-globalvar p = 15;
-globalvar y= 20;
-globalvar x = 25;
+zita p = 15;
+zita y= 20;
+zita x = 25;
 
 nyora(p);
 nyora(y);
 nyora(x);
 nyora("Hello world");
 
-class Test {
-    globalvar ctest = 103;
+kirasi Test {
+    zita ctest = 103;
     basa grret() {
         nyora("Hello world 2");
     }

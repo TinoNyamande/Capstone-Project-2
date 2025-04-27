@@ -1,4 +1,4 @@
-globalvar x = 2 ;
+zita x = 2 ;
 basa double() {
    nyora(x+2);
    nyora("Hello word");

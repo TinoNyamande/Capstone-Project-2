@@ -1,5 +1,7 @@
-zita x = 20 mu kana(x>5) {
-   nyora("X mudiki");
+zita x = 20 ;
+zita y = 40;
+ kana(x>y) {
+   nyora("X muhombe kuna y");
 } kanaKuti{
-    nyora("X muhombe")
+    nyora("x mudiki kuna y")
 }

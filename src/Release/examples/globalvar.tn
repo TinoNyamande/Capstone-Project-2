@@ -1,4 +1,4 @@
-globalvar y =20-1;
-globalvar x = 2;
-nyora(y);
+zita x = 2;
+nyora(x);
+x=6;
 nyora(x);

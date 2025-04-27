@@ -1,5 +1,5 @@
-zita count = 1 mu
-kusvika (100 > 10) {
+zita count = 1 ;
+kusvika (count < 10) {
    nyora("Test");
     
 }

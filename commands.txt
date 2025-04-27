@@ -1,2 +1,7 @@
 cmake -G "Visual Studio 17 2022" -DLLVM_DIR="C:\llvm\llvm-build\lib\cmake\llvm" .
 cmake --build . --config Release
+https://huggingface.co/settings/gated-repos
+
+
+llx-MUprnUO02u9OoJPQp2opWBx4Wewmf7c4zDFY98q9ldwT7NrH
+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

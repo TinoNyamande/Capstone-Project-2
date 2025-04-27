@@ -18,29 +18,26 @@ std::map<char, int> BinopPrecedence;
   return TokPrec;
 }
 
-/// LogError* - These are little helper functions for error handling.
-std::unique_ptr<ExprAST> LogError(const char *Str)
-{
-  fprintf(stderr, "Error: %s\n", Str);
+std::unique_ptr<ExprAST> LogError(const char *Str) {
+  fprintf(stderr, "Kukanganisa: %s\n", Str);
   return nullptr;
 }
 
-std::unique_ptr<ClassAST> LogErrorC(const char *Str)
-{
-  fprintf(stderr, "Error: %s\n", Str);
+std::unique_ptr<ClassAST> LogErrorC(const char *Str) {
+  fprintf(stderr, "Kukanganisa: %s\n", Str);
   return nullptr;
 }
 
-std::unique_ptr<PrototypeAST> LogErrorP(const char *Str)
-{
+std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
   LogError(Str);
   return nullptr;
 }
-std::unique_ptr<FunctionAST> LogErrorF(const char *Str)
-{
+
+std::unique_ptr<FunctionAST> LogErrorF(const char *Str) {
   LogError(Str);
   return nullptr;
 }
+
 
  std::unique_ptr<ExprAST> ParseExpression();
 
@@ -57,20 +54,21 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      getNextToken(); // Eat 'while'
  
      if (CurTok != '(')
-          return LogError("yaitirwa '(' mushure me 'while'");
-     getNextToken(); // Eat '('
+     return LogError("Inotarisirwa '(' mushure me 'while'");
+   getNextToken(); // Eat '('
+   
+   auto Cond = ParseExpression();
+   if (!Cond)
+     return nullptr;
+   
+   if (CurTok != ')')
+     return LogError("Inotarisirwa ')' mushure me mamiriro");
+   getNextToken(); // Eat ')'
+   
+   if (CurTok != '{')
+     return LogError("Inotarisirwa '{' kutanga muviri we while");
+   getNextToken(); // Eat '{'
  
-     auto Cond = ParseExpression();
-     if (!Cond)
-         return nullptr;
- 
-     if (CurTok != ')')
-        return LogError("yaitirwa ')' mushure me mamiriro");
-     getNextToken(); // Eat ')'
- 
-     if (CurTok != '{')
-        return LogError("yaitirwa '{' kutanga muviri we while");
-     getNextToken(); // Eat '{'
  
      std::vector<std::unique_ptr<ExprAST>> BodyExpressions;
      
@@ -89,7 +87,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      }
  
      if (CurTok != '}')
-        return LogError("yaitirwa '}' mushure me muviri we while");
+        return LogError("Panotarisirwa '}' mushure me muviri we while");
      getNextToken(); // Eat '}'
  
      return std::make_unique<WhileExprAST>(std::move(Cond), std::move(BodyExpressions));
@@ -124,14 +122,15 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   if (CurTok == '.') {
     getNextToken(); // eat '.'
 
-    if (CurTok != tok_identifier)
-      return LogError("Expected identifier after '.'");
+  if (CurTok != tok_identifier)
+    return LogError("Panotarisirwa zita mushure me '.'");
 
-    std::string MemberName = IdentifierStr;
-    getNextToken();
+
+  std::string MemberName = IdentifierStr;
+  getNextToken();
 
     // Variable access: Class.VarName
-    if (CurTok != '(') {
+  if (CurTok != '(') {
       std::string FullVar = IdName + "." + MemberName;
       return std::make_unique<VariableExprAST>(FullVar);
     }
@@ -173,7 +172,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
 
       if (CurTok == ')') break;
       if (CurTok != ',')
-        return LogError("Expected ')' or ',' in argument list");
+        return LogError("Panotarisirwa )");
 
       getNextToken();
     }
@@ -192,7 +191,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      getNextToken(); // Eat 'if'
  
      if (CurTok != '(')
-        return LogError("yaitirwa '(' mushure me 'if'");
+        return LogError("Panotarisirwa'(' mushure me 'kana'");
      getNextToken(); // Eat '('
  
      auto Cond = ParseExpression();
@@ -200,11 +199,11 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          return nullptr;
  
      if (CurTok != ')')
-        return LogError("yaitirwa ')' mushure me mamiriro");
+        return LogError("Panotarisirwa ')' mushure ma kana");
      getNextToken(); // Eat ')'
  
      if (CurTok != '{')
-         return LogError("yaitirwa '{' mushure me mamiriro e 'if'");
+         return LogError("Panotarisirwa '{' ");
      getNextToken(); // Eat '{'
  
      std::vector<std::unique_ptr<ExprAST>> ThenStatements;
@@ -221,7 +220,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      }
  
      if (CurTok != '}')
-         return LogError("yaitirwa '}' mushure me chikamu che 'if'");
+         return LogError("Panotarisirwa '}' mushure me chikamu che 'if'");
      getNextToken(); // Eat '}'
  
      std::vector<std::unique_ptr<ExprAST>> ElseStatements;
@@ -229,7 +228,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          getNextToken(); // Eat 'else'
  
          if (CurTok != '{')
-             return LogError("yaitirwa '{' mushure me 'else'");
+             return LogError("Panotarisirwa '{' mushure me 'else'");
          getNextToken(); // Eat '{'
  
          while (CurTok != '}' && CurTok != tok_eof) {
@@ -267,18 +266,18 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   getNextToken(); // eat 'for'
 
   if (CurTok != '(')
-      return LogError("yaitirwa '(' mushure me 'for'");
+      return LogError("Panotarisirwa '(' mushure me 'pakati'");
   getNextToken(); // eat '('.
 
   // Expect variable name inside parentheses
   if (CurTok != tok_identifier)
-      return LogError("yaitirwa zita remusiyano mukati me 'for ()'");
+      return LogError("Panotarisirwa 'zita'  mukati me 'pakati ()'");
   
   std::string IdName = IdentifierStr;
   getNextToken(); // eat identifier.
 
   if (CurTok != '=')
-      return LogError("yaitirwa '=' mushure me zita remusiyano mu 'for ()'");
+      return LogError("Panotarisirwa '=' mushure me 'zita' mu 'pakati ()'");
   getNextToken(); // eat '='.
 
   auto Start = ParseExpression();
@@ -286,7 +285,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
       return nullptr;
 
   if (CurTok != ',')
-      return LogError("yaitirwa ',' mushure me kukosha kwekutanga mu 'for ()'");
+      return LogError("Panotarisirwa ',' mushure me kukosha kwekutanga mu 'for ()'");
   getNextToken(); // eat ','.
 
   auto End = ParseExpression();
@@ -303,12 +302,12 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   }
 
   if (CurTok != ')')
-      return LogError("yaitirwa ')' mushure me 'for ()' conditions");
+      return LogError("Panotarisirwa ')' mushure me 'for ()' conditions");
   getNextToken(); // eat ')'.
 
   // Expect opening curly brace for the loop body.
   if (CurTok != '{')
-      return LogError("yaitirwa '{' mushure me 'for ()'");
+      return LogError("Panotarisirwa '{' mushure me 'for ()'");
   getNextToken(); // eat '{'.
 
   // Parse multiple expressions inside the loop body.
@@ -321,7 +320,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   }
 
   if (CurTok != '}')
-      return LogError("yaitirwa '}' mushure me loop body");
+      return LogError("Panotarisirwa '}' mushure me loop body");
   getNextToken(); // eat '}'.
 
   // Create a BlockExprAST to store multiple statements.
@@ -342,7 +341,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    // At least one variable name is required.
    if (CurTok != tok_identifier)
-     return LogError("yaitirwa zita remusiyano mushure me 'var'");
+     return LogError("Panotarisirwa zita remusiyano mushure me 'var'");
  
    while (true)
    {
@@ -368,12 +367,12 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      getNextToken(); // eat the ','.
  
      if (CurTok != tok_identifier)
-       return LogError("yaitirwa rondedzero yezita remusiyano mushure me 'var'");
+       return LogError("Panotarisirwa rondedzero yezita remusiyano mushure me 'var'");
    }
  
    // At this point, we have to have 'in'.
    if (CurTok != tok_in)
-     return LogError("yaitirwa 'in' mushure me 'var'");
+     return LogError("Panotarisirwa 'in' mushure me 'var'");
    getNextToken(); // eat 'in'.
  
    auto Body = ParseExpression();
@@ -669,7 +668,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  /// definition ::= 'def' prototype expression
   std::unique_ptr<FunctionAST> ParseDefinition() {
      getNextToken(); // Eat 'def'
-     std::string FnName = IdentifierStr;
+     std::string FName = IdentifierStr;
      auto Proto = ParsePrototype();
      if (!Proto)
          return nullptr;
@@ -699,7 +698,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          return LogErrorF("Expected '}' to close function body");
      getNextToken(); // Eat '}'
  
-     return std::make_unique<FunctionAST>(std::move(Proto), std::move(BodyExpressions),FnName);
+     return std::make_unique<FunctionAST>(std::move(Proto), std::move(BodyExpressions),FName);
  }
  
  
