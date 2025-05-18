@@ -7,14 +7,20 @@ std::string IdentifierStr;
 double NumVal;
 std::ifstream InputFile; 
 std::map<std::string, llvm::GlobalVariable *> GlobalNamedValues;
+int CurrentLine = 1;
 
 int gettok()
 {
   static int LastChar = ' ';
 
   // Skip any whitespace.
-  while (isspace(LastChar))
+  while (isspace(LastChar)) {
+    if (LastChar == '\n') {
+      CurrentLine++;
+    }
     LastChar = InputFile.get();
+  }
+  
 
   // Handle string literals.
   if (LastChar == '"')

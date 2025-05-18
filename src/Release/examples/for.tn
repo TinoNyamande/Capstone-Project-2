@@ -1,4 +1,4 @@
-pakati (i = 1, 10) {
+pakati (i = 1, 10,2) {
   kana(i>5) {
    nyora("i muhombe");
 } kanaKuti{

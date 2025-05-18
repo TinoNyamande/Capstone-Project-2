@@ -45,6 +45,7 @@ using namespace llvm::orc;
 extern std::ifstream InputFile;
 extern std::string FileBuffer;
 extern const char *FileBufferPtr;
+extern int CurrentLine;
 
 
 enum Token

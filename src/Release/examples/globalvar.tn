@@ -1,4 +1,0 @@
-zita x = 2;
-nyora(x);
-x=6;
-nyora(x);

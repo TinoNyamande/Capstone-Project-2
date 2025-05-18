@@ -19,17 +19,16 @@ std::map<char, int> BinopPrecedence;
 }
 
 std::unique_ptr<ExprAST> LogError(const char *Str) {
-  fprintf(stderr, "Kukanganisa: %s\n", Str);
+  fprintf(stderr, "Kukanganisa pa line %d: %s\n", CurrentLine, Str);
   return nullptr;
 }
 
 std::unique_ptr<ClassAST> LogErrorC(const char *Str) {
-  fprintf(stderr, "Kukanganisa: %s\n", Str);
+  LogError(Str);
   return nullptr;
 }
 
 std::unique_ptr<PrototypeAST> LogErrorP(const char *Str) {
-  LogError(Str);
   return nullptr;
 }
 
@@ -54,7 +53,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      getNextToken(); // Eat 'while'
  
      if (CurTok != '(')
-     return LogError("Inotarisirwa '(' mushure me 'while'");
+     return LogError("Inotarisirwa '(' mushure me 'kusvika'");
    getNextToken(); // Eat '('
    
    auto Cond = ParseExpression();
@@ -62,11 +61,11 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      return nullptr;
    
    if (CurTok != ')')
-     return LogError("Inotarisirwa ')' mushure me mamiriro");
+     return LogError("Inotarisirwa ')' mushure me condition");
    getNextToken(); // Eat ')'
    
    if (CurTok != '{')
-     return LogError("Inotarisirwa '{' kutanga muviri we while");
+     return LogError("Inotarisirwa '{' kutanga muviri we 'kusvika'");
    getNextToken(); // Eat '{'
  
  
@@ -87,7 +86,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      }
  
      if (CurTok != '}')
-        return LogError("Panotarisirwa '}' mushure me muviri we while");
+        return LogError("Panotarisirwa '}' mushure me muviri we 'kusvika'");
      getNextToken(); // Eat '}'
  
      return std::make_unique<WhileExprAST>(std::move(Cond), std::move(BodyExpressions));
@@ -148,7 +147,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
 
         if (CurTok == ')') break;
         if (CurTok != ',')
-          return LogError("Expected ',' or ')' in argument list");
+          return LogError("Panotarisirwa ',' or ')' mu list rema argument");
 
         getNextToken();
       }
@@ -220,7 +219,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      }
  
      if (CurTok != '}')
-         return LogError("Panotarisirwa '}' mushure me chikamu che 'if'");
+         return LogError("Panotarisirwa '}' mushure me chikamu che 'kana'");
      getNextToken(); // Eat '}'
  
      std::vector<std::unique_ptr<ExprAST>> ElseStatements;
@@ -228,7 +227,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          getNextToken(); // Eat 'else'
  
          if (CurTok != '{')
-             return LogError("Panotarisirwa '{' mushure me 'else'");
+             return LogError("Panotarisirwa '{' mushure me 'kanakuti'");
          getNextToken(); // Eat '{'
  
          while (CurTok != '}' && CurTok != tok_eof) {
@@ -244,7 +243,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          }
  
          if (CurTok != '}')
-             return LogError("expected '}' after else block");
+             return LogError("Panotarisirwa '}' mukupera kwe code ya 'kanakuti'");
          getNextToken(); // Eat '}'
      }
  
@@ -285,7 +284,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
       return nullptr;
 
   if (CurTok != ',')
-      return LogError("Panotarisirwa ',' mushure me kukosha kwekutanga mu 'for ()'");
+      return LogError("Panotarisirwa ',' mushure me kukosha kwekutanga mu 'pakati ()'");
   getNextToken(); // eat ','.
 
   auto End = ParseExpression();
@@ -302,12 +301,12 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   }
 
   if (CurTok != ')')
-      return LogError("Panotarisirwa ')' mushure me 'for ()' conditions");
+      return LogError("Panotarisirwa ')'");
   getNextToken(); // eat ')'.
 
   // Expect opening curly brace for the loop body.
   if (CurTok != '{')
-      return LogError("Panotarisirwa '{' mushure me 'for ()'");
+      return LogError("Panotarisirwa '{' mushure me 'pakati ()'");
   getNextToken(); // eat '{'.
 
   // Parse multiple expressions inside the loop body.
@@ -341,7 +340,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    // At least one variable name is required.
    if (CurTok != tok_identifier)
-     return LogError("Panotarisirwa zita remusiyano mushure me 'var'");
+     return LogError("Panotarisirwa zita remusiyano mushure me 'zita'");
  
    while (true)
    {
@@ -367,12 +366,12 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      getNextToken(); // eat the ','.
  
      if (CurTok != tok_identifier)
-       return LogError("Panotarisirwa rondedzero yezita remusiyano mushure me 'var'");
+       return LogError("Panotarisirwa rondedzero yezita remusiyano mushure me 'zita'");
    }
  
    // At this point, we have to have 'in'.
    if (CurTok != tok_in)
-     return LogError("Panotarisirwa 'in' mushure me 'var'");
+     return LogError("Panotarisirwa 'in' mushure me 'zita'");
    getNextToken(); // eat 'in'.
  
    auto Body = ParseExpression();
@@ -387,7 +386,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
   std::vector<std::pair<std::string, std::unique_ptr<ExprAST>>> Vars;
   
   if (CurTok != tok_identifier)
-      return LogError("expected variable name after 'globalvar'");
+      return LogError("expected variable name after 'zita'");
 
   while (true) {
       std::string Name = IdentifierStr;
@@ -406,7 +405,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
       getNextToken(); // eat ','
       
       if (CurTok != tok_identifier)
-          return LogError("expected variable name after comma");
+          return LogError("Panotarisirwa zita pamberi pe comma");
   }
   
   return std::make_unique<GlobalVarExprAST>(std::move(Vars));
@@ -423,8 +422,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
    switch (CurTok)
    {
    default:{
-     std::cout << "Cur Tok " << CurTok << "\n";  
-     return LogError("unknown token when expecting an expression");
+     return LogError("Paita izwi risiri kuzivikanwa");
    }
    case tok_identifier:
      return ParseIdentifierExpr();
@@ -520,14 +518,14 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  std::unique_ptr<ClassAST> ParseClass() {
   
   if (CurTok != tok_identifier) {
-      return LogErrorC("Expected class name after 'class'");
+      return LogErrorC("Panotarisirwa zita rekirasi pamberi pa 'kirasi'");
   }
   
   std::string ClassName = IdentifierStr;
   getNextToken(); // eat class name
 
   if (CurTok != '{') {
-      return LogErrorC("Expected '{' after class name");
+      return LogErrorC("Panotarisirwa '{' pamberi pezita rekirasi");
   }
   getNextToken(); // eat '{'
 
@@ -548,7 +546,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
         getNextToken(); // eat 'var'
         
         if (CurTok != tok_identifier)
-            return LogErrorC("Expected member variable name");
+            return LogErrorC("Panotarisirwa izwi amberi pa 'zita'");
         
         std::string VarName = IdentifierStr;
         getNextToken();
@@ -563,12 +561,12 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
     }
 
        else {
-          return LogErrorC("Expected method definition in class");
+          return LogErrorC("Panotwarisirwa basa");
       }
   }
 
   if (CurTok != '}') {
-      return LogErrorC("Expected '}' at end of class");
+      return LogErrorC("Panptarisirwa'}' pakupera kwe kirasi");
   }
   getNextToken(); // eat '}'
 
@@ -606,53 +604,24 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    unsigned Kind = 0; // 0 = identifier, 1 = unary, 2 = binary.
    unsigned BinaryPrecedence = 30;
- 
-   switch (CurTok)
-   {
-   default:
-     return LogErrorP("Expected function name in prototype");
-   case tok_identifier:
-     FnName = IdentifierStr;
-     Kind = 0;
-     getNextToken();
-     break;
-   case tok_unary:
-     getNextToken();
-     if (!isascii(CurTok))
-       return LogErrorP("Expected unary operator");
-     FnName = "unary";
-     FnName += (char)CurTok;
-     Kind = 1;
-     getNextToken();
-     break;
-   case tok_binary:
-     getNextToken();
-     if (!isascii(CurTok))
-       return LogErrorP("Expected binary operator");
-     FnName = "binary";
-     FnName += (char)CurTok;
-     Kind = 2;
-     getNextToken();
- 
-     // Read the precedence if present.
-     if (CurTok == tok_number)
-     {
-       if (NumVal < 1 || NumVal > 100)
-         return LogErrorP("Invalid precedence: must be 1..100");
-       BinaryPrecedence = (unsigned)NumVal;
-       getNextToken();
-     }
-     break;
+   if (CurTok != tok_identifier) {
+    return LogErrorP("Panotarisirwa zita re 'basa'");
    }
+   FnName = IdentifierStr;
+   Kind = 0;
+   getNextToken();
+ 
+ 
+  //}
  
    if (CurTok != '(')
-     return LogErrorP("Expected '(' in prototype");
+     return LogErrorP("Panotarisirwa '('");
  
    std::vector<std::string> ArgNames;
    while (getNextToken() == tok_identifier)
      ArgNames.push_back(IdentifierStr);
    if (CurTok != ')')
-     return LogErrorP("Expected ')' in prototype");
+      return LogErrorP("Panotarisirwa ')'");
  
    // success.
    getNextToken(); // eat ')'.
@@ -668,13 +637,16 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  /// definition ::= 'def' prototype expression
   std::unique_ptr<FunctionAST> ParseDefinition() {
      getNextToken(); // Eat 'def'
+     if (CurTok != tok_identifier) {
+      return LogErrorF("Panotarisirwa zita re basa mushure me 'basa'");
+    }
      std::string FName = IdentifierStr;
      auto Proto = ParsePrototype();
      if (!Proto)
          return nullptr;
  
      if (CurTok != '{')
-         return LogErrorF("Expected '{' to start function body");
+         return LogErrorF("Panotarisirwa '{' kutanga muviri we 'basa'");
      getNextToken(); // Eat '{'
  
      std::vector<std::unique_ptr<ExprAST>> BodyExpressions;
@@ -695,7 +667,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
      }
  
      if (CurTok != '}')
-         return LogErrorF("Expected '}' to close function body");
+         return LogErrorF("Panotarisirwa '}' kupedza muviri we 'basa'");
      getNextToken(); // Eat '}'
  
      return std::make_unique<FunctionAST>(std::move(Proto), std::move(BodyExpressions),FName);

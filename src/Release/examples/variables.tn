@@ -1,4 +1,8 @@
-
-zita x = 30.0 ;
+zita x = 2;
 nyora(x);
+
+zita y = "Tino";
+nyora(y)
+
+nyora(x+6);
 

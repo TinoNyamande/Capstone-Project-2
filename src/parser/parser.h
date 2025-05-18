@@ -9,7 +9,9 @@
 
 // Parsing state.
 extern int CurTok;
+
 int getNextToken();
+
 
 // Operator precedence map.
 extern std::map<char, int> BinopPrecedence;

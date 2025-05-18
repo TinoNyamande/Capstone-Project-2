@@ -1,5 +1,6 @@
 zita x = 2 ;
 basa double() {
+   zita greeting = "Mhoro";
    nyora(x+2);
    nyora("Hello word");
    nyora("Test");

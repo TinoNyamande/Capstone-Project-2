@@ -265,7 +265,7 @@ int main(int argc, char **argv)
 {
   if (argc < 2)
   {
-    std::cerr << "Usage: " << argv[0] << " <file>" << std::endl;
+    std::cerr << "Mashandisirwo : " << argv[0] << " <faera>" << std::endl;
     return 1;
   }
 
@@ -273,11 +273,12 @@ int main(int argc, char **argv)
   InputFile.open(argv[1]);
   if (!InputFile.is_open())
   {
-    std::cerr << "Error: Could not open file " << argv[1] << std::endl;
+    std::cerr << "Faera iri ratadza kuvhurwa " << argv[1] << std::endl;
     return 1;
   }
 
   // Initialize LLVM components
+
   InitializeNativeTarget();
   InitializeNativeTargetAsmPrinter();
   InitializeNativeTargetAsmParser();

@@ -88,7 +88,7 @@ Value *UnaryExprAST::codegen()
 
   Function *F = getFunction(std::string("unary") + Opcode);
   if (!F)
-    return LogErrorV("Unknown unary operator");
+    return LogErrorV("Operator iyi haisi kuzivikanwa");
 
   return Builder->CreateCall(F, OperandV, "unop");
 }
@@ -99,7 +99,7 @@ Value *BinaryExprAST::codegen()
     // Handle assignment
     VariableExprAST *LHSE = static_cast<VariableExprAST*>(LHS.get());
     if (!LHSE)
-      return LogErrorV("destination of '=' must be a variable");
+      return LogErrorV("Panotarisirwa 'zita' kumberi kwa '='");
       
     Value *Val = RHS->codegen();
     if (!Val)
@@ -118,7 +118,7 @@ Value *BinaryExprAST::codegen()
     }
     
     if (!Variable)
-      return LogErrorV(("Unknown variable name: " + LHSE->getName()).c_str());
+      return LogErrorV(("'Zita iri harisi kuzivikanwa: " + LHSE->getName()).c_str());
 
     Builder->CreateStore(Val, Variable);
     return Val;
@@ -222,7 +222,7 @@ Value *CallExprAST::codegen()
 
     // Ensure `nyora` gets exactly one argument.
     if (Args.size() != 1)
-      return LogErrorV("nyora expects exactly one argument");
+      return LogErrorV("'nyora' inotarisira kunyora chinhu chimwe chete");
 
     // Generate code for the argument.
     Value *Arg = Args[0]->codegen();
@@ -255,13 +255,13 @@ Value *CallExprAST::codegen()
     }
     else
     {
-      return LogErrorV("Unsupported type for nyora");
+      return LogErrorV("Data iri harikwanise kunyorwa");
     }
   }
 
   // Handle other function calls.
   if (CalleeF->arg_size() != Args.size())
-    return LogErrorV("Incorrect # arguments passed");
+    return LogErrorV("Ma arguments aya haasiriwo anotarisirwa");
 
   std::vector<Value *> ArgsV;
   for (unsigned i = 0, e = Args.size(); i != e; ++i)
@@ -430,7 +430,7 @@ Value* VariableExprAST::codegen() {
     if (GlobalNamedValues.count(Name)) {
       GlobalVariable* GV = GlobalNamedValues[Name];
       if (!GV) {
-        return LogErrorV("Null global variable");
+        return LogErrorV("'Zita' iri harina kuwanikwa");
       }
       return Builder->CreateLoad(GV->getValueType(), GV, Name.c_str());
     }
@@ -439,7 +439,7 @@ Value* VariableExprAST::codegen() {
   // Then check local variables
   AllocaInst* A = NamedValues[Name];
   if (!A)
-    return LogErrorV(("Unknown variable name: "+Name).c_str());
+    return LogErrorV(("'Zita' irir harina kuwanikwa: "+Name).c_str());
   
   return Builder->CreateLoad(A->getAllocatedType(), A, Name.c_str());
 }
@@ -536,11 +536,11 @@ Value* GlobalVarExprAST::codegen() {
     
     if (TheModule->getNamedGlobal(Name)) {
 
-      return LogErrorV(("Redefinition of global variable " + Name).c_str());
+      return LogErrorV(("'Zita iri riripo nechekare"+ Name).c_str());
     }
     if (GlobalNamedValues.count(Name)) {
         
-      return LogErrorV(("Internal error with global variable " + Name).c_str());
+      return LogErrorV(("'Zita' iri harina kuwanikwa " + Name).c_str());
     }
 
     Value* InitVal = nullptr;
@@ -643,7 +643,7 @@ Value *ClassAST::codegen() {
     );
 
     if (!NewFunction->codegen()) {
-      return LogErrorV(("Failed to generate method " + FullName).c_str());
+      return LogErrorV(("Basa iri ratadza kugadzirwa" + FullName).c_str());
     }
   }
 
@@ -658,7 +658,7 @@ Value *ClassAST::codegen() {
   auto GlobalVars = std::make_unique<GlobalVarExprAST>(std::move(QualifiedMembers));
 
   if (!GlobalVars->codegen()) {
-    return LogErrorV(("Failed to generate class member variables for " + Name).c_str());
+    return LogErrorV(("'zita' iri ratadza kugadzirwa " + Name).c_str());
   }
 
   return Constant::getNullValue(Type::getInt32Ty(*TheContext));
@@ -873,7 +873,7 @@ void MainLoop() {
                 // Keep the module with globals alive
                 needsModuleAdd = true;
             } else {
-                LogError("Failed to codegen global variable");
+                LogError("Zita iri ratadza kugadzirwa");
             }
             break;
         }
