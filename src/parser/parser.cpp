@@ -441,6 +441,9 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  
    case tok_var:
      return ParseVarExpr();
+    
+   case tok_globalvar:
+     return ParseGlobalVarExpr();
 
  
    case tok_return:
@@ -577,6 +580,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
  /// expression
  ///   ::= unary binoprhs
  ///
+
   std::unique_ptr<ExprAST> ParseExpression()
  {
    // Parse the left-hand side of the expression.
@@ -661,9 +665,7 @@ static std::unique_ptr<ExprAST> ParseNumberExpr()
          if (CurTok == ';') {
              getNextToken();
          }
-        //   else if (CurTok != '}') {
-        //      return LogErrorF("Expected '}' to close function body");
-        //  }
+
      }
  
      if (CurTok != '}')

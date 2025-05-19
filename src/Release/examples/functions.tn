@@ -4,6 +4,9 @@ basa double() {
    nyora(x+2);
    nyora("Hello word");
    nyora("Test");
+   nyora(greeting);
 }
 double()
+
+
 
